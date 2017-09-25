@@ -1,0 +1,36 @@
+<div class="container">
+    <div class="row">
+        <div class="col-xs-12 col-lg-12">
+            <br>
+            <br>
+            <h1>#i18n{module.mylutece.oauth2.login_form.pageTitle}</h1>
+            <br/>
+            <br>
+            <@messages errors=errors />
+            <br>
+            <div class="well">
+                <#if user?? >
+                    <h3>#i18n{module.mylutece.oauth2.login_form.titleConnected} : </h3>
+                    <img src="images/local/skin/plugins/mylutece/modules/oauth2/oauth2.png" alt="Oauth2 badge"/>
+                    <br>
+                    <br>
+                    <a href="${url_dologout}" class="btn btn-primary">
+                        <i class="glyphicon glyphicon-log-out"></i>
+                        #i18n{module.mylutece.oauth2.login_form.buttonSignOut}
+                    </a>
+                <#else>
+                    <h3>#i18n{module.mylutece.oauth2.login_form.titleConnect} : </h3>
+                    <form action="servlet/plugins/franceconnect/callback" method="get">
+                        <input type="image" src="images/local/skin/plugins/mylutece/modules/oauth2/oauth2.png"  alt="Log In" id="login"/>
+                    	<input type="hidden" name="data_client" value="authData"/>
+                    </form>
+                </#if>
+            </div>
+            <br>
+            <br>
+            <br>
+        </div>
+    </div>
+</div>
+
+

@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="ISO-8859-1" standalone="no"?><plug-in>
+    <name>mylutece-oauth2</name>
+    <class>fr.paris.lutece.portal.service.plugin.PluginDefaultImplementation</class>
+    <version>0.9.0-SNAPSHOT</version>
+    <description>module.mylutece.oauth2.module.description</description>
+    <documentation/>
+    <installation/>
+    <changes/>
+    <user-guide/>
+    <provider>module.mylutece.oauth2.module.provider</provider>
+    <provider-url>http://lutece.paris.fr</provider-url>
+    <icon-url>images/admin/skin/plugins/mylutece/modules/oauth2/oauth2.png</icon-url>
+    <copyright>Copyright 2001-2017 Mairie de Paris</copyright>
+    <core-version-dependency>
+        <min-core-version>4.0.0</min-core-version>
+        <max-core-version/>
+    </core-version-dependency>
+
+    <!-- if the plugin must have a connection pool with parameter : 1 - yes, 0 - no -->
+    <db-pool-required>0</db-pool-required>
+
+   <!-- Applications -->
+    <applications>
+        <application>
+            <application-id>oauth2</application-id>
+            <application-class>fr.paris.lutece.plugins.mylutece.modules.oauth2.web.Oauth2App</application-class>
+        </application>
+    </applications>
+
+</plug-in>

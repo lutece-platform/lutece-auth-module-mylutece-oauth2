@@ -1,0 +1,78 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+
+    <parent>
+        <artifactId>lutece-global-pom</artifactId>
+        <groupId>fr.paris.lutece.tools</groupId>
+        <version>4.0.4</version>
+    </parent>
+
+    <modelVersion>4.0.0</modelVersion>
+    <groupId>fr.paris.lutece.plugins</groupId>
+    <artifactId>module-mylutece-oauth2</artifactId>
+    <packaging>lutece-plugin</packaging>
+    <version>0.9.0-SNAPSHOT</version>
+    <name>Lutece mylutece oauth2 module</name>
+
+    <repositories>
+        <repository>
+            <id>lutece</id>
+            <name>luteceRepository</name>
+            <url>http://dev.lutece.paris.fr/maven_repository</url>
+            <layout>default</layout>
+        </repository>
+    </repositories>
+
+    <dependencies>
+    	<dependency>
+            <groupId>fr.paris.lutece.plugins</groupId>
+            <artifactId>plugin-oauth2</artifactId>
+            <version>[0.9.0-SNAPSHOT,)</version>
+            <type>lutece-plugin</type>
+        </dependency>
+        <dependency>
+            <groupId>fr.paris.lutece.plugins</groupId>
+            <artifactId>plugin-mylutece</artifactId>
+            <version>[3.1.0,)</version>
+            <type>lutece-plugin</type>
+        </dependency>
+        <dependency>
+            <groupId>fr.paris.lutece.plugins</groupId>
+            <artifactId>library-httpaccess</artifactId>
+            <version>[2.4.0,)</version>
+        </dependency>
+        
+        <!-- Used by MITRE JWT Parser implementation -->
+        <dependency>
+            <groupId>com.nimbusds</groupId>
+            <artifactId>nimbus-jose-jwt</artifactId>
+            <version>3.10</version>
+        </dependency>
+
+        <!-- Used by JJWT JWT Parser implementation -->
+        <dependency>
+            <groupId>io.jsonwebtoken</groupId>
+            <artifactId>jjwt</artifactId>
+            <version>0.5</version>
+        </dependency>
+        <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-databind</artifactId>
+            <version>[2.4.2,)</version>
+        </dependency>
+
+    </dependencies>
+
+    <properties>
+        <componentName>mylutece-franceconnect</componentName>
+        <jiraProjectName>FRCONNECT</jiraProjectName>
+        <jiraComponentId/>
+    </properties>
+
+    <scm>
+        <connection>scm:git:https://github.com/lutece-secteur-public/franceconnect-module-mylutece-franceconnect.git</connection>
+        <developerConnection>scm:git:https://github.com/lutece-secteur-public/franceconnect-module-mylutece-franceconnect.git</developerConnection>
+        <url>https://github.com/lutece-secteur-public/franceconnect-module-mylutece-franceconnect.git</url>
+        <tag>HEAD</tag>
+    </scm>
+    
+</project>
