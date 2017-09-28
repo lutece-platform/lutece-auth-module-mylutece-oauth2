@@ -63,15 +63,15 @@
     </dependencies>
 
     <properties>
-        <componentName>mylutece-franceconnect</componentName>
-        <jiraProjectName>FRCONNECT</jiraProjectName>
-        <jiraComponentId/>
+        <componentName>mylutece-oauth2</componentName>
+        <jiraProjectName>MMO2</jiraProjectName>
+        <jiraComponentId>13774</jiraComponentId>
     </properties>
 
     <scm>
-        <connection>scm:git:https://github.com/lutece-secteur-public/franceconnect-module-mylutece-franceconnect.git</connection>
-        <developerConnection>scm:git:https://github.com/lutece-secteur-public/franceconnect-module-mylutece-franceconnect.git</developerConnection>
-        <url>https://github.com/lutece-secteur-public/franceconnect-module-mylutece-franceconnect.git</url>
+        <connection>scm:git:https://github.com/lutece-platform/lutece-auth-module-mylutece-oauth2.git</connection>
+        <developerConnection>scm:git:https://github.com/lutece-platform/lutece-auth-module-mylutece-oauth2.git</developerConnection>
+        <url>https://github.com/lutece-platform/lutece-auth-module-mylutece-oauth2.git</url>
         <tag>HEAD</tag>
     </scm>
     
