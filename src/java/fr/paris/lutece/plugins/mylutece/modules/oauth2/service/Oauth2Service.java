@@ -48,6 +48,7 @@ import org.apache.log4j.Logger;
 
 import fr.paris.lutece.plugins.mylutece.modules.oauth2.authentication.Oauth2Authentication;
 import fr.paris.lutece.plugins.mylutece.modules.oauth2.authentication.Oauth2User;
+import fr.paris.lutece.plugins.mylutece.service.MyLuteceIdentityService;
 import fr.paris.lutece.plugins.oauth2.business.Token;
 import fr.paris.lutece.portal.service.security.SecurityService;
 import fr.paris.lutece.portal.service.util.AppPropertiesService;
@@ -61,6 +62,9 @@ public final class Oauth2Service {
 	private static Logger _logger = Logger.getLogger("lutece.oauth2");
 	private static final String PROPERTY_USER_KEY_NAME = "mylutece-oauth2.attributeKeyUsername";
 	private static final String PROPERTY_USER_MAPPING_ATTRIBUTES = "mylutece-oauth2.userMappingAttributes";
+	private static final String PROPERTY_IDENTITY_ATTRIBUTE_KEY = "mylutece-oauth2.attributeIdentityKey";
+	
+	
 	private static final String CONSTANT_LUTECE_USER_PROPERTIES_PATH = "mylutece-oauth2.attribute";
 	private static Map<String, List<String>> ATTRIBUTE_USER_MAPPING;
 	private static String[] ATTRIBUTE_USER_KEY_NAME;
@@ -171,6 +175,22 @@ public final class Oauth2Service {
 					}
 				}
 			}
+			
+			//add Identities Informations
+			//get Identity key the default key is the value of lutece user name
+			String strIdentityKey=user.getName();
+			String strIdentityKeyAttribute=AppPropertiesService.getProperty(PROPERTY_IDENTITY_ATTRIBUTE_KEY);
+			if(strIdentityKeyAttribute!=null && mapUserInfo.containsKey(strIdentityKeyAttribute) )
+			{
+				strIdentityKey= mapUserInfo.get(strIdentityKeyAttribute).toString();
+			}
+				
+	         Map<String,String> identityInformations= MyLuteceIdentityService.getInstance( ).getIdentityInformations( strIdentityKey );
+	         if(identityInformations!=null && !identityInformations.isEmpty( ))
+	         {
+	             user.getUserInfos( ).putAll( identityInformations );
+	         }
+	        
 		}
 
 		SecurityService.getInstance().registerUser(request, user);
