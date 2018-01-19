@@ -49,6 +49,7 @@ import org.apache.log4j.Logger;
 import fr.paris.lutece.plugins.mylutece.modules.oauth2.authentication.Oauth2Authentication;
 import fr.paris.lutece.plugins.mylutece.modules.oauth2.authentication.Oauth2User;
 import fr.paris.lutece.plugins.mylutece.service.MyLuteceIdentityService;
+import fr.paris.lutece.plugins.mylutece.web.MyLuteceApp;
 import fr.paris.lutece.plugins.oauth2.business.Token;
 import fr.paris.lutece.portal.service.security.SecurityService;
 import fr.paris.lutece.portal.service.util.AppPropertiesService;
@@ -63,7 +64,7 @@ public final class Oauth2Service {
 	private static final String PROPERTY_USER_KEY_NAME = "mylutece-oauth2.attributeKeyUsername";
 	private static final String PROPERTY_USER_MAPPING_ATTRIBUTES = "mylutece-oauth2.userMappingAttributes";
 	private static final String PROPERTY_IDENTITY_ATTRIBUTE_KEY = "mylutece-oauth2.attributeIdentityKey";
-	
+	private static final String TOKEN_SUBJECT="sub";
 	
 	private static final String CONSTANT_LUTECE_USER_PROPERTIES_PATH = "mylutece-oauth2.attribute";
 	private static Map<String, List<String>> ATTRIBUTE_USER_MAPPING;
@@ -139,7 +140,14 @@ public final class Oauth2Service {
 	 *            Users Info
 	 */
 	public void processAuthentication(HttpServletRequest request, Map<String, Object> mapUserInfo, Token token) {
-		Oauth2User user = null;
+		
+	    //subject in user map
+	    if(token.getIdToken( )!=null && token.getIdToken( ).getSubject( )!=null)
+	    {
+	        mapUserInfo.put( TOKEN_SUBJECT, token.getIdToken( ).getSubject( ) );
+	        
+	    }
+	    Oauth2User user = null;
 		for (int i = 0; i < ATTRIBUTE_USER_KEY_NAME.length; i++) {
 
 			if (mapUserInfo.containsKey(ATTRIBUTE_USER_KEY_NAME[i])) {
@@ -222,7 +230,7 @@ public final class Oauth2Service {
 		_logger.info("Next URL : " + strNextURL);
 
 		if (strNextURL == null) {
-			strNextURL = SecurityService.getInstance().getLoginPageUrl();
+			strNextURL = MyLuteceApp.getDefaultRedirectUrl( );
 		}
 
 		response.sendRedirect(strNextURL);
