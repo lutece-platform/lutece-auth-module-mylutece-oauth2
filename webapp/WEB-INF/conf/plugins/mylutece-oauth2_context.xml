@@ -24,4 +24,19 @@
             </set>
         </property>
     </bean>
+        
+  <bean id="mylutece-oauth2.authDataClientJson" class="fr.paris.lutece.plugins.mylutece.modules.oauth2.authentication.AuthDataClientJson">
+        <property name="name" value="authDataJson" />
+        <property name="dataServerUri" value="https://fcp.integ01.dev-franceconnect.fr/api/v1/userinfo"/>
+        <property name="tokenMethod" value="HEADER"/>
+        <property name="scope">
+            <set value-type="java.lang.String">
+                <value>openid</value>
+                <value>profile</value>
+                <value>email</value>
+                <value>address</value>
+                <value>phone</value>
+            </set>
+        </property>
+    </bean>
 </beans>
