@@ -48,7 +48,7 @@ import org.apache.log4j.Logger;
 
 import fr.paris.lutece.plugins.mylutece.modules.oauth2.authentication.Oauth2Authentication;
 import fr.paris.lutece.plugins.mylutece.modules.oauth2.authentication.Oauth2User;
-import fr.paris.lutece.plugins.mylutece.service.MyLuteceIdentityService;
+import fr.paris.lutece.plugins.mylutece.service.MyLuteceUserService;
 import fr.paris.lutece.plugins.mylutece.web.MyLuteceApp;
 import fr.paris.lutece.plugins.oauth2.business.Token;
 import fr.paris.lutece.portal.service.security.SecurityService;
@@ -192,13 +192,9 @@ public final class Oauth2Service {
 			{
 				strIdentityKey= mapUserInfo.get(strIdentityKeyAttribute).toString();
 			}
-				
-	         Map<String,String> identityInformations= MyLuteceIdentityService.getInstance( ).getIdentityInformations( strIdentityKey );
-	         if(identityInformations!=null && !identityInformations.isEmpty( ))
-	         {
-	             user.getUserInfos( ).putAll( identityInformations );
-	         }
-	        
+			
+                    user.setName( strIdentityKey );
+                    MyLuteceUserService.provideUserExternalInfos( user );
 		}
 
 		SecurityService.getInstance().registerUser(request, user);

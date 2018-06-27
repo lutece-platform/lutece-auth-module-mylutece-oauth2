@@ -94,12 +94,12 @@ public class Oauth2Authentication extends PortalAuthentication implements Serial
      * @throws LoginException The LoginException
      */
     @Override
-    public LuteceUser login( String strUserName, String strUserPassword, HttpServletRequest request )
+    public LuteceUser processLogin( String strUserName, String strUserPassword, HttpServletRequest request )
         throws LoginException, LoginRedirectException
     {
         return getHttpAuthenticatedUser( request );
     }
-
+    
     /**
      * This methods logout the user
      *
@@ -119,22 +119,6 @@ public class Oauth2Authentication extends PortalAuthentication implements Serial
     public LuteceUser getAnonymousUser(  )
     {
         return new Oauth2User( LuteceUser.ANONYMOUS_USERNAME, this );
-    }
-
-    /**
-     * Checks that the current user is associated to a given role
-     *
-     * @param user The user
-     * @param request The HTTP request
-     * @param strRole The role name
-     * @return Returns true if the user is associated to the role, otherwise
-     * false
-     */
-    @Override
-    public boolean isUserInRole( LuteceUser user, HttpServletRequest request, String strRole )
-    {
-        // Not used
-        return false;
     }
 
     /**
