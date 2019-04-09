@@ -118,7 +118,7 @@ public class Oauth2Authentication extends PortalAuthentication implements Serial
     @Override
     public LuteceUser getAnonymousUser(  )
     {
-        return new Oauth2User( LuteceUser.ANONYMOUS_USERNAME, this );
+        return new Oauth2User( LuteceUser.ANONYMOUS_USERNAME, null,this );
     }
 
     /**

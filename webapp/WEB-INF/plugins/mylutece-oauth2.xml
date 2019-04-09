@@ -26,5 +26,18 @@
             <application-class>fr.paris.lutece.plugins.mylutece.modules.oauth2.web.Oauth2App</application-class>
         </application>
     </applications>
+    <filters>
+		<filter>
+				<filter-name>
+					Mylutece Oauth2 Filter
+				</filter-name>
+				<filter-class>
+						fr.paris.lutece.plugins.mylutece.modules.oauth2.web.MyluteceOauth2Filter
+				</filter-class>
+				<url-pattern>
+					/jsp/site/*
+				</url-pattern>
+		</filter>	
+   </filters>
 
 </plug-in>

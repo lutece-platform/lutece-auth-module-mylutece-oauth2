@@ -151,7 +151,7 @@ public final class Oauth2Service {
 		for (int i = 0; i < ATTRIBUTE_USER_KEY_NAME.length; i++) {
 
 			if (mapUserInfo.containsKey(ATTRIBUTE_USER_KEY_NAME[i])) {
-				user = new Oauth2User((String) mapUserInfo.get(ATTRIBUTE_USER_KEY_NAME[i]), _authService);
+				user = new Oauth2User((String) mapUserInfo.get(ATTRIBUTE_USER_KEY_NAME[i]),token, _authService);
 			}
 		}
 

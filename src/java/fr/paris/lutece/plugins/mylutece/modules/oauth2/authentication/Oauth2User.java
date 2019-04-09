@@ -33,6 +33,7 @@
  */
 package fr.paris.lutece.plugins.mylutece.modules.oauth2.authentication;
 
+import fr.paris.lutece.plugins.oauth2.business.Token;
 import fr.paris.lutece.portal.service.security.LuteceAuthentication;
 import fr.paris.lutece.portal.service.security.LuteceUser;
 
@@ -48,17 +49,21 @@ public class Oauth2User extends LuteceUser implements Serializable
 
     private static final long serialVersionUID = 1L;
     private String _strEmail;
+    private Token _token;
 
+
+    
 
     /**
      * Constructor
      * @param strUserName The user's name
      * @param authenticationService The authentication service that authenticates the user
      */
-    public Oauth2User( String strUserName, LuteceAuthentication authenticationService )
+    public Oauth2User( String strUserName,Token token, LuteceAuthentication authenticationService )
     {
         super( strUserName, authenticationService );
         this.setLuteceAuthenticationService( authenticationService );
+        this._token=token;
     }
 
     /**
@@ -80,4 +85,12 @@ public class Oauth2User extends LuteceUser implements Serializable
     {
         _strEmail = strEmail;
     }
+    
+    
+    public Token getToken( )
+    {
+        return _token;
+    }
+
+  
 }
