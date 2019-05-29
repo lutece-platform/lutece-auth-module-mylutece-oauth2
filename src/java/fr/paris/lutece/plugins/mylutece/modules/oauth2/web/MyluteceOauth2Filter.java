@@ -56,6 +56,7 @@ import fr.paris.lutece.plugins.oauth2.service.TokenService;
 import fr.paris.lutece.portal.service.security.LuteceUser;
 import fr.paris.lutece.portal.service.security.SecurityService;
 import fr.paris.lutece.portal.service.spring.SpringContextService;
+import fr.paris.lutece.portal.service.util.AppPropertiesService;
 import fr.paris.lutece.portal.web.PortalJspBean;
 import fr.paris.lutece.util.httpaccess.HttpAccessException;
 
@@ -70,12 +71,13 @@ public class MyluteceOauth2Filter implements Filter
  
     public static final String SESSION_MYLUTECE_OAUTH2_FILTER_ENABLE = "enable";
     public static final String PARAM_PROMPT_NONE = "prompt=none";
-    private static final String BEAN_AUTH_SERVER_CONF = "oauth2.server";
-    private static final String BEAN_AUTH_CLIENT_CONF = "oauth2.client";
+    
+    private static final String PROPERTY_USE_PROMPT_NONE = "mylutece-oauth2.usePromptNone";
+    private static final String PROPERTY_VALIDATE_REFRESH_TOKEN = "mylutece-oauth2.validateRefreshToken";
     
     
-    private AuthServerConf _authServerConf;
-    private AuthClientConf _authClientConf;
+    private boolean _bUsePromptNone;
+    private boolean _bValidateRefreshToken;
     
     /**
      *
@@ -101,7 +103,7 @@ public class MyluteceOauth2Filter implements Filter
         {
             LuteceUser user = SecurityService.getInstance( ).getRegisteredUser( request );
 
-            if ( user == null )
+            if ( user == null && _bUsePromptNone )
             {
                 HttpSession session = request.getSession( true );
 
@@ -117,10 +119,10 @@ public class MyluteceOauth2Filter implements Filter
 
                 session.setAttribute( AuthDataClient.SESSION_ERROR_LOGIN, AuthDataClient.REINIT_ERROR_LOGIN );
             }
-            else if(user instanceof Oauth2User)
+            else if(_bValidateRefreshToken && user instanceof Oauth2User)
             {
                 Oauth2User oauth2User=(Oauth2User)user;
-                if(oauth2User.getToken( )!=null && oauth2User.getToken( ).getRefreshToken( ) !=null && !TokenService.validateRefreshToken( _authClientConf, _authServerConf, oauth2User.getToken( ).getRefreshToken( ) ))
+                if(oauth2User.getToken( )!=null && oauth2User.getToken( ).getRefreshToken( ) !=null && !TokenService.getService( ).validateRefreshToken(  oauth2User.getToken( ).getRefreshToken( ) ))
                 {
                    
                                 SecurityService.getInstance().logoutUser(request);
@@ -140,9 +142,9 @@ public class MyluteceOauth2Filter implements Filter
     @Override
     public void init( FilterConfig config ) throws ServletException
     {
-         _authServerConf=SpringContextService.getBean( BEAN_AUTH_SERVER_CONF );
-         _authClientConf=SpringContextService.getBean( BEAN_AUTH_CLIENT_CONF );
-        
+           _bUsePromptNone=AppPropertiesService.getPropertyBoolean( PROPERTY_USE_PROMPT_NONE, false );
+         _bValidateRefreshToken=AppPropertiesService.getPropertyBoolean( PROPERTY_VALIDATE_REFRESH_TOKEN, false );
+         
     }
 
 
