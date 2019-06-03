@@ -139,7 +139,7 @@ public final class Oauth2Service {
 	 * @param userInfo
 	 *            Users Info
 	 */
-	public void processAuthentication(HttpServletRequest request, Map<String, Object> mapUserInfo, Token token) {
+	public  Oauth2User processAuthentication(HttpServletRequest request, Map<String, Object> mapUserInfo, Token token) {
 		
 	    //subject in user map
 	    if(token.getIdToken( )!=null && token.getIdToken( ).getSubject( )!=null)
@@ -202,6 +202,8 @@ public final class Oauth2Service {
 		}
 
 		SecurityService.getInstance().registerUser(request, user);
+		
+		return user;
 	}
 
 	/**

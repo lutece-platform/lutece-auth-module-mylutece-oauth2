@@ -192,7 +192,8 @@ public class Oauth2Authentication extends PortalAuthentication implements Serial
                 try
                 {
                     Map<String, Object> mapUserInfo =authDataClient.parse(authDataClient.getData( token ));
-                    Oauth2Service.getInstance( ).processAuthentication( request, mapUserInfo, token );
+                    return Oauth2Service.getInstance( ).processAuthentication( request, mapUserInfo, token );
+                    
                 }
                 catch( IOException e )
                 {
