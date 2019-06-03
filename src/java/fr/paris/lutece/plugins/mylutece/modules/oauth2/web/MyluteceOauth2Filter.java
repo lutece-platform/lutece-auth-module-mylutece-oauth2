@@ -47,18 +47,15 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import fr.paris.lutece.plugins.mylutece.modules.oauth2.authentication.AuthDataClient;
+import fr.paris.lutece.plugins.mylutece.modules.oauth2.authentication.Oauth2Authentication;
 import fr.paris.lutece.plugins.mylutece.modules.oauth2.authentication.Oauth2User;
-import fr.paris.lutece.plugins.oauth2.business.AuthClientConf;
-import fr.paris.lutece.plugins.oauth2.business.AuthServerConf;
-import fr.paris.lutece.plugins.oauth2.business.Token;
-import fr.paris.lutece.plugins.oauth2.jwt.TokenValidationException;
+import fr.paris.lutece.plugins.mylutece.modules.oauth2.service.Oauth2LuteceUserSessionService;
 import fr.paris.lutece.plugins.oauth2.service.TokenService;
 import fr.paris.lutece.portal.service.security.LuteceUser;
 import fr.paris.lutece.portal.service.security.SecurityService;
 import fr.paris.lutece.portal.service.spring.SpringContextService;
 import fr.paris.lutece.portal.service.util.AppPropertiesService;
 import fr.paris.lutece.portal.web.PortalJspBean;
-import fr.paris.lutece.util.httpaccess.HttpAccessException;
 
 /**
  * ParisConnectLuteceFilters
@@ -129,6 +126,20 @@ public class MyluteceOauth2Filter implements Filter
                         
                 }
             }
+          if( !Oauth2LuteceUserSessionService.getInstance(  )
+            .isLuteceUserUpToDate( request.getSession( true ).getId(  ) ))
+            {
+                
+                Oauth2Authentication oauth2Authentication = (Oauth2Authentication) SpringContextService.getBean( 
+                        "mylutece-oauth2.authentication" );
+                user = oauth2Authentication.getHttpAuthenticatedUser( request );
+                
+                if ( user != null )
+                {
+                    SecurityService.getInstance(  ).registerUser( request, user );
+                }
+                
+            }
 
         }
 
@@ -142,7 +153,7 @@ public class MyluteceOauth2Filter implements Filter
     @Override
     public void init( FilterConfig config ) throws ServletException
     {
-           _bUsePromptNone=AppPropertiesService.getPropertyBoolean( PROPERTY_USE_PROMPT_NONE, false );
+         _bUsePromptNone=AppPropertiesService.getPropertyBoolean( PROPERTY_USE_PROMPT_NONE, false );
          _bValidateRefreshToken=AppPropertiesService.getPropertyBoolean( PROPERTY_VALIDATE_REFRESH_TOKEN, false );
          
     }

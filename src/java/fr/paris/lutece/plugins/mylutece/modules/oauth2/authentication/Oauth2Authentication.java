@@ -33,16 +33,23 @@
  */
 package fr.paris.lutece.plugins.mylutece.modules.oauth2.authentication;
 
-import fr.paris.lutece.plugins.mylutece.authentication.PortalAuthentication;
-import fr.paris.lutece.portal.service.security.LoginRedirectException;
-import fr.paris.lutece.portal.service.security.LuteceUser;
-import fr.paris.lutece.portal.service.util.AppPropertiesService;
-
+import java.io.IOException;
 import java.io.Serializable;
+import java.util.Map;
 
 import javax.security.auth.login.LoginException;
-
 import javax.servlet.http.HttpServletRequest;
+
+import fr.paris.lutece.plugins.mylutece.authentication.PortalAuthentication;
+import fr.paris.lutece.plugins.mylutece.modules.oauth2.service.Oauth2Service;
+import fr.paris.lutece.plugins.oauth2.business.Token;
+import fr.paris.lutece.plugins.oauth2.service.DataClientService;
+import fr.paris.lutece.plugins.oauth2.service.TokenService;
+import fr.paris.lutece.portal.service.security.LoginRedirectException;
+import fr.paris.lutece.portal.service.security.LuteceUser;
+import fr.paris.lutece.portal.service.security.SecurityService;
+import fr.paris.lutece.portal.service.util.AppLogService;
+import fr.paris.lutece.portal.service.util.AppPropertiesService;
 
 
 /**
@@ -57,6 +64,7 @@ public class Oauth2Authentication extends PortalAuthentication implements Serial
     private static final String CONSTANT_PATH_ICON = "images/local/skin/plugins/mylutece/modules/openid/mylutece-openid.png";
     private static final String PLUGIN_NAME = "mylutece-openid";
     private static final long serialVersionUID = 1L;
+    private static final String authDataClientName="authData";
 
     /**
      * Gets the Authentification service name
@@ -159,5 +167,48 @@ public class Oauth2Authentication extends PortalAuthentication implements Serial
     public boolean isMultiAuthenticationSupported(  )
     {
         return false;
+    }
+    /**
+     * Returns a Lutece user object if the user is already authenticated by Openam
+     * 
+     * @param request
+     *            The HTTP request
+     * @return Returns A Lutece User or null if there no user authenticated
+     */
+    @Override
+    public LuteceUser getHttpAuthenticatedUser( HttpServletRequest request )
+    {
+        LuteceUser user = null;
+        user = SecurityService.getInstance( ).getRegisteredUser( request );
+        //Reload User if info
+        if ( user != null && user instanceof Oauth2User)
+        {
+            Oauth2User userOauth= (Oauth2User)user;
+            if(userOauth.getToken( ).getRefreshToken( )!=null)
+            {
+                
+                AuthDataClient authDataClient= (AuthDataClient)DataClientService.instance( ).getClient( authDataClientName );
+                Token token =TokenService.getService( ).getTokenByRefreshToken( userOauth.getToken( ).getRefreshToken( ) );
+                try
+                {
+                    Map<String, Object> mapUserInfo =authDataClient.parse(authDataClient.getData( token ));
+                    Oauth2Service.getInstance( ).processAuthentication( request, mapUserInfo, token );
+                }
+                catch( IOException e )
+                {
+                    // TODO Auto-generated catch block
+                   AppLogService.error( "error during retrieving user info with refresh token  ", e);
+                }
+                   
+                
+                
+            }
+//            userOauth.getToken( )
+//            // add Openam LuteceUser session
+//            OpenamLuteceUserSessionService.getInstance( ).addLuteceUserSession( user.getName( ), request.getSession( true ).getId( ) );
+//        }
+        }
+
+        return user;
     }
 }

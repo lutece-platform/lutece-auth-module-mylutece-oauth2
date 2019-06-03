@@ -193,8 +193,12 @@ public final class Oauth2Service {
 				strIdentityKey= mapUserInfo.get(strIdentityKeyAttribute).toString();
 			}
 			
-                    user.setName( strIdentityKey );
-                    MyLuteceUserService.provideUserExternalInfos( user );
+            user.setName( strIdentityKey );
+            MyLuteceUserService.provideUserExternalInfos( user );
+            
+                // add Oauth2LuteceUserSessionService session
+            Oauth2LuteceUserSessionService.getInstance( ).addLuteceUserSession( user.getName( ), request.getSession( true ).getId( ) );
+                
 		}
 
 		SecurityService.getInstance().registerUser(request, user);

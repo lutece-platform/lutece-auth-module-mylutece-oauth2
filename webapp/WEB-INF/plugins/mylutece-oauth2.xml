@@ -38,6 +38,22 @@
 					/jsp/site/*
 				</url-pattern>
 		</filter>	
+		<filter>
+				<filter-name>
+					Oauth 2 Notify Lutece User
+				</filter-name>
+				<filter-class>
+					fr.paris.lutece.plugins.mylutece.modules.oauth2.web.NotifyLuteceUserFilter
+				</filter-class>
+				<url-pattern>
+					/plugins/myluteceoauth2/notifyLuteceUser
+				</url-pattern>
+		</filter>	
    </filters>
+   <listeners>
+		<listener>
+  	 			<listener-class>fr.paris.lutece.plugins.mylutece.modules.oauth2.listener.Oauth2LuteceUserSessionListener</listener-class>
+		</listener>
+  </listeners>
 
 </plug-in>
