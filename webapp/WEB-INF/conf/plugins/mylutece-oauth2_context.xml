@@ -16,6 +16,7 @@
   <bean id="mylutece-oauth2.authentication" class="fr.paris.lutece.plugins.mylutece.modules.oauth2.authentication.Oauth2Authentication"/>
   <bean id="mylutece-oauth2.authDataClient" class="fr.paris.lutece.plugins.mylutece.modules.oauth2.authentication.AuthDataClient">
         <property name="name" value="authData" />
+        <property name="default" value="true"/>
         <property name="dataServerUri" value="https://fcp.integ01.dev-franceconnect.fr/api/v1/userinfo"/>
         <property name="tokenMethod" value="HEADER"/>
         <property name="scope">
