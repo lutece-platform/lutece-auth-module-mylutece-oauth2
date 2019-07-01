@@ -46,6 +46,7 @@ import org.codehaus.jackson.map.ObjectMapper;
 import org.codehaus.jackson.type.TypeReference;
 
 import fr.paris.lutece.plugins.mylutece.modules.oauth2.service.Oauth2Service;
+import fr.paris.lutece.plugins.mylutece.web.MyLuteceApp;
 import fr.paris.lutece.plugins.oauth2.business.Token;
 import fr.paris.lutece.plugins.oauth2.dataclient.AbstractDataClient;
 import fr.paris.lutece.plugins.oauth2.web.Constants;
@@ -125,7 +126,7 @@ public class AuthDataClient extends AbstractDataClient
 
                 String strLoginNextUrl = PortalJspBean.getLoginNextUrl( request );
 
-                if ( session.getAttribute( AuthDataClient.SESSION_ERROR_LOGIN ) == null )
+                if ( strLoginNextUrl!=null && session.getAttribute( AuthDataClient.SESSION_ERROR_LOGIN ) == null )
                 {
                     if ( strLoginNextUrl.contains( "?" ) )
                     {
@@ -138,6 +139,10 @@ public class AuthDataClient extends AbstractDataClient
                     }
                     strLoginNextUrl += AuthDataClient.PARAM_ERROR_LOGIN + "=" + AuthDataClient.ERROR_TYPE_LOGIN_REQUIRED;
                 }
+                else
+                {
+                    strLoginNextUrl.equals( MyLuteceApp.getDefaultRedirectUrl( ) );
+                }
 
                 response.sendRedirect( strLoginNextUrl );
             }
@@ -149,15 +154,17 @@ public class AuthDataClient extends AbstractDataClient
         }
         else if(Constants.ERROR_TYPE_INVALID_STATE.equals( strError ) || Constants.ERROR_TYPE_RETRIEVING_AUTHORIZATION_CODE.equals( strError ) )
         {
-            
             try
             {
-                response.sendRedirect(SecurityService.getInstance( ).getLoginPageUrl( ));
+
+                AppLogService.error( "Oauth 2 error  "+strError+  " redirect on default url" );
+                response.sendRedirect( MyLuteceApp.getDefaultRedirectUrl( ) );
             }
             catch( IOException e )
             {
-                AppLogService.error( "error during login redirection url after oauth 2 error " +strError );
+                AppLogService.error( "Oauth 2 error", e );
             }
+
             
         }
         else
