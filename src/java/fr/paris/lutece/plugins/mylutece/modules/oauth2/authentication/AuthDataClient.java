@@ -48,6 +48,8 @@ import org.codehaus.jackson.type.TypeReference;
 import fr.paris.lutece.plugins.mylutece.modules.oauth2.service.Oauth2Service;
 import fr.paris.lutece.plugins.oauth2.business.Token;
 import fr.paris.lutece.plugins.oauth2.dataclient.AbstractDataClient;
+import fr.paris.lutece.plugins.oauth2.web.Constants;
+import fr.paris.lutece.portal.service.security.SecurityService;
 import fr.paris.lutece.portal.service.util.AppLogService;
 import fr.paris.lutece.portal.web.PortalJspBean;
 
@@ -144,6 +146,19 @@ public class AuthDataClient extends AbstractDataClient
                 AppLogService.error( "Oauth 2 error", e );
             }
 
+        }
+        else if(Constants.ERROR_TYPE_INVALID_STATE.equals( strError ) || Constants.ERROR_TYPE_RETRIEVING_AUTHORIZATION_CODE.equals( strError ) )
+        {
+            
+            try
+            {
+                response.sendRedirect(SecurityService.getInstance( ).getLoginPageUrl( ));
+            }
+            catch( IOException e )
+            {
+                AppLogService.error( "error during login redirection url after oauth 2 error " +strError );
+            }
+            
         }
         else
         {
