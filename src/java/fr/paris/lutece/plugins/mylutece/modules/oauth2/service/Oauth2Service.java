@@ -51,6 +51,7 @@ import fr.paris.lutece.plugins.mylutece.modules.oauth2.authentication.Oauth2User
 import fr.paris.lutece.plugins.mylutece.service.MyLuteceUserService;
 import fr.paris.lutece.plugins.mylutece.web.MyLuteceApp;
 import fr.paris.lutece.plugins.oauth2.business.Token;
+import fr.paris.lutece.portal.service.security.LuteceUser;
 import fr.paris.lutece.portal.service.security.SecurityService;
 import fr.paris.lutece.portal.service.util.AppPropertiesService;
 import fr.paris.lutece.portal.web.PortalJspBean;
@@ -182,6 +183,19 @@ public final class Oauth2Service {
 						}
 					}
 				}
+				//set Email in lutece User
+				if(!StringUtils.isEmpty(user.getUserInfo( LuteceUser.HOME_INFO_ONLINE_EMAIL )))
+				{
+				    user.setEmail( user.getUserInfo( LuteceUser.HOME_INFO_ONLINE_EMAIL ));
+				    
+				}
+				else if(!StringUtils.isEmpty(user.getUserInfo( LuteceUser.BUSINESS_INFO_ONLINE_EMAIL )))
+                {
+                    user.setEmail( user.getUserInfo( LuteceUser.BUSINESS_INFO_ONLINE_EMAIL ));
+                    
+                }
+				
+				    
 			}
 			
 			//add Identities Informations
