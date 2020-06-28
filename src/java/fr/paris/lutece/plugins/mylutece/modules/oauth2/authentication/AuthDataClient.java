@@ -41,16 +41,16 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
-import org.codehaus.jackson.map.DeserializationConfig;
-import org.codehaus.jackson.map.ObjectMapper;
-import org.codehaus.jackson.type.TypeReference;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.DeserializationConfig;
+import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import fr.paris.lutece.plugins.mylutece.modules.oauth2.service.Oauth2Service;
 import fr.paris.lutece.plugins.mylutece.web.MyLuteceApp;
 import fr.paris.lutece.plugins.oauth2.business.Token;
 import fr.paris.lutece.plugins.oauth2.dataclient.AbstractDataClient;
 import fr.paris.lutece.plugins.oauth2.web.Constants;
-import fr.paris.lutece.portal.service.security.SecurityService;
 import fr.paris.lutece.portal.service.util.AppLogService;
 import fr.paris.lutece.portal.web.PortalJspBean;
 
@@ -71,7 +71,7 @@ public class AuthDataClient extends AbstractDataClient
     static
     {
         _mapper = new ObjectMapper( );
-        _mapper.configure( DeserializationConfig.Feature.FAIL_ON_UNKNOWN_PROPERTIES, false );
+        _mapper.disable( DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES );
     }
 
     /**

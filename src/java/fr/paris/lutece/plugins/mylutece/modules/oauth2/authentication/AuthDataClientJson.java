@@ -40,9 +40,9 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.codehaus.jackson.map.DeserializationConfig;
-import org.codehaus.jackson.map.ObjectMapper;
-import org.codehaus.jackson.type.TypeReference;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import fr.paris.lutece.plugins.mylutece.modules.oauth2.service.Oauth2Service;
 import fr.paris.lutece.plugins.oauth2.business.Token;
@@ -63,7 +63,7 @@ public class AuthDataClientJson extends AbstractDataClient
     static
     {
         _mapper = new ObjectMapper(  );
-        _mapper.configure( DeserializationConfig.Feature.FAIL_ON_UNKNOWN_PROPERTIES, false );
+        _mapper.disable( DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES );
     }
 
     /**
