@@ -91,6 +91,12 @@ public class Oauth2User extends LuteceUser implements Serializable
     {
         return _token;
     }
+    
+    public void setToken(Token token )
+    {
+       _token=token;
+    }
+
 
   
 }

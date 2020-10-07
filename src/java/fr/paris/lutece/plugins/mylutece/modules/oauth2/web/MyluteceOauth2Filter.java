@@ -50,6 +50,7 @@ import fr.paris.lutece.plugins.mylutece.modules.oauth2.authentication.AuthDataCl
 import fr.paris.lutece.plugins.mylutece.modules.oauth2.authentication.Oauth2Authentication;
 import fr.paris.lutece.plugins.mylutece.modules.oauth2.authentication.Oauth2User;
 import fr.paris.lutece.plugins.mylutece.modules.oauth2.service.Oauth2LuteceUserSessionService;
+import fr.paris.lutece.plugins.oauth2.business.Token;
 import fr.paris.lutece.plugins.oauth2.service.TokenService;
 import fr.paris.lutece.portal.service.security.LuteceUser;
 import fr.paris.lutece.portal.service.security.SecurityService;
@@ -119,11 +120,18 @@ public class MyluteceOauth2Filter implements Filter
             else if(_bValidateRefreshToken && user instanceof Oauth2User)
             {
                 Oauth2User oauth2User=(Oauth2User)user;
-                if(oauth2User.getToken( )!=null && oauth2User.getToken( ).getRefreshToken( ) !=null && !TokenService.getService( ).validateRefreshToken(  oauth2User.getToken( ).getRefreshToken( ) ))
+                if(oauth2User.getToken( )!=null && oauth2User.getToken( ).getRefreshToken( ) !=null )
                 {
+                	Token token=TokenService.getService( ).getTokenByRefreshToken(oauth2User.getToken( ).getRefreshToken( ) ) ;
+                	if(token==null)
+                	{
                    
                                 SecurityService.getInstance().logoutUser(request);
-                        
+                	}
+                	else
+                	{
+                		oauth2User.setToken(token);
+                	}
                 }
             }
           if( !Oauth2LuteceUserSessionService.getInstance(  )
