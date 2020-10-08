@@ -35,6 +35,11 @@ package fr.paris.lutece.plugins.mylutece.modules.oauth2.web;
 
 import java.io.IOException;
 import java.net.URLEncoder;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
 
 import javax.servlet.Filter;
 import javax.servlet.FilterChain;
@@ -46,6 +51,9 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import org.apache.commons.collections.map.HashedMap;
+import org.apache.commons.lang.StringUtils;
+
 import fr.paris.lutece.plugins.mylutece.modules.oauth2.authentication.AuthDataClient;
 import fr.paris.lutece.plugins.mylutece.modules.oauth2.authentication.Oauth2Authentication;
 import fr.paris.lutece.plugins.mylutece.modules.oauth2.authentication.Oauth2User;
@@ -55,8 +63,10 @@ import fr.paris.lutece.plugins.oauth2.service.TokenService;
 import fr.paris.lutece.portal.service.security.LuteceUser;
 import fr.paris.lutece.portal.service.security.SecurityService;
 import fr.paris.lutece.portal.service.spring.SpringContextService;
+import fr.paris.lutece.portal.service.util.AppPathService;
 import fr.paris.lutece.portal.service.util.AppPropertiesService;
 import fr.paris.lutece.portal.web.PortalJspBean;
+import fr.paris.lutece.util.url.UrlItem;
 
 /**
  * ParisConnectLuteceFilters
@@ -71,11 +81,24 @@ public class MyluteceOauth2Filter implements Filter
     public static final String PARAM_PROMPT_NONE = "prompt=none";
     
     private static final String PROPERTY_USE_PROMPT_NONE = "mylutece-oauth2.usePromptNone";
-    private static final String PROPERTY_VALIDATE_REFRESH_TOKEN = "mylutece-oauth2.validateRefreshToken";
+    private static final String PROPERTY_USE_PROMPT_NONE_WHITE_LISTING_URLS = "mylutece-oauth2.usePromptNoneWhiteListingUrls";
+    private static final String PROPERTY_USE_PROMPT_NONE_WHITE_LISTING_HEADERS = "mylutece-oauth2.usePromptNoneWhiteListingHeaders";
     
+    
+    private static final String PROPERTY_VALIDATE_REFRESH_TOKEN = "mylutece-oauth2.validateRefreshToken";
+     private static final String URL_INTERROGATIVE = "?";
+    private static final String URL_AMPERSAND = "&";
+    private static final String URL_EQUAL = "=";
+    private static final String URL_STAR = "*";
+    private static final String SEPARATOR = ",";
     
     private boolean _bUsePromptNone;
     private boolean _bValidateRefreshToken;
+    private List<String> _listUsePromptWhiteUrls;
+    private Map<String,List<String>> _mapUsePromptWhiteHeaders;
+    
+    
+    
     
     /**
      *
@@ -101,7 +124,7 @@ public class MyluteceOauth2Filter implements Filter
         {
             LuteceUser user = SecurityService.getInstance( ).getRegisteredUser( request );
 
-            if ( user == null && _bUsePromptNone )
+            if ( user == null && isUsePomptNoneForRequest(request) )
             {
                 HttpSession session = request.getSession( true );
 
@@ -164,7 +187,132 @@ public class MyluteceOauth2Filter implements Filter
          _bUsePromptNone=AppPropertiesService.getPropertyBoolean( PROPERTY_USE_PROMPT_NONE, false );
          _bValidateRefreshToken=AppPropertiesService.getPropertyBoolean( PROPERTY_VALIDATE_REFRESH_TOKEN, false );
          
+         String strTabWhiteListingUrls = AppPropertiesService.getProperty(PROPERTY_USE_PROMPT_NONE_WHITE_LISTING_URLS);
+         String strTabWhiteListingHeaders = AppPropertiesService.getProperty(PROPERTY_USE_PROMPT_NONE_WHITE_LISTING_HEADERS);
+			if (StringUtils.isNotBlank(strTabWhiteListingUrls)) {
+				_listUsePromptWhiteUrls = Arrays.asList(strTabWhiteListingUrls.split(SEPARATOR));
+			}
+			if (StringUtils.isNotBlank(strTabWhiteListingHeaders)) {
+				_mapUsePromptWhiteHeaders = new HashMap<String, List<String>>();
+				Arrays.asList(strTabWhiteListingHeaders.split(SEPARATOR)).stream().forEach(x->_mapUsePromptWhiteHeaders.put(x, Arrays.asList(AppPropertiesService.getProperty(PROPERTY_USE_PROMPT_NONE_WHITE_LISTING_HEADERS+"."+x,"").split(SEPARATOR))));
+			}
+			
+     }
+    
+    private boolean isUsePomptNoneForRequest(HttpServletRequest request)
+    {
+    	boolean bReturn=true;
+    	if(_bUsePromptNone )
+    	{
+    	   //test headers white list	
+    		if(_mapUsePromptWhiteHeaders!=null && _mapUsePromptWhiteHeaders.size()>0)
+    		{
+    			bReturn=!_mapUsePromptWhiteHeaders.keySet().stream().anyMatch(x-> request.getHeader(x)!=null && _mapUsePromptWhiteHeaders.get(x).stream().anyMatch(v->v.equalsIgnoreCase(request.getHeader(x))));
+    			
+    		}
+    		//test url white List
+    		if(bReturn && _listUsePromptWhiteUrls.size()>0)
+    		{
+    			bReturn=! _listUsePromptWhiteUrls.stream().anyMatch(x-> matchUrl(request, x));		
+    		}
+    		
+    		return bReturn;
+    			
+    	}
+    	else
+    	{
+    		bReturn=false;
+    	}
+    	
+    	return bReturn;
+    	
+    	
     }
+    
+    
+    /**
+     * method to test if the URL matches the pattern
+    
+     * @param request the request
+     * @param strUrlPatern the pattern
+     * @return true if the URL matches the pattern
+     */
+    private boolean matchUrl( HttpServletRequest request, String strUrlPatern )
+    {
+        boolean bMatch = false;
+
+        if ( strUrlPatern != null )
+        {
+            UrlItem url = new UrlItem( getResquestedUrl( request ) );
+
+            if ( strUrlPatern.contains( URL_INTERROGATIVE ) )
+            {
+                for ( String strParamPatternValue : strUrlPatern.substring( strUrlPatern.indexOf( URL_INTERROGATIVE ) +
+                        1 ).split( URL_AMPERSAND ) )
+                {
+                    String[] arrayPatternParamValue = strParamPatternValue.split( URL_EQUAL );
+
+                    if ( ( arrayPatternParamValue != null ) &&
+                            ( request.getParameter( arrayPatternParamValue[0] ) != null ) )
+                    {
+                        url.addParameter( arrayPatternParamValue[0], request.getParameter( arrayPatternParamValue[0] ) );
+                    }
+                }
+            }
+
+            if ( strUrlPatern.contains( URL_STAR ) )
+            {
+                String strUrlPaternLeftEnd = strUrlPatern.substring( 0, strUrlPatern.indexOf( URL_STAR ) );
+                String strAbsoluteUrlPattern = getAbsoluteUrl( request, strUrlPaternLeftEnd );
+                bMatch = url.getUrl(  ).startsWith( strAbsoluteUrlPattern );
+            }
+            else
+            {
+                String strAbsoluteUrlPattern = getAbsoluteUrl( request, strUrlPatern );
+                bMatch = url.getUrl(  ).equals( strAbsoluteUrlPattern );
+            }
+        }
+
+        return bMatch;
+    }
+    
+    /**
+     * Returns the absolute url corresponding to the given one, if the later was
+     * found to be relative. An url starting with "http://" is absolute. A
+     * relative url should be given relatively to the webapp root.
+     *
+     * @param request
+     *            the http request (provides the base path if needed)
+     * @param strUrl
+     *            the url to transform
+     * @return the corresonding absolute url
+     *
+     * */
+    private String getAbsoluteUrl( HttpServletRequest request, String strUrl )
+    {
+        if ( ( strUrl != null ) && !strUrl.startsWith( "http://" ) && !strUrl.startsWith( "https://" ) )
+        {
+            return AppPathService.getBaseUrl( request ) + strUrl;
+        }
+        else
+        {
+            return strUrl;
+        }
+    }
+
+    /**
+     * Return the absolute representation of the requested url
+     *
+     * @param request
+     *            the http request (provides the base path if needed)
+     * @return the requested url has a string
+     *
+     * */
+    private String getResquestedUrl( HttpServletRequest request )
+    {
+        return AppPathService.getBaseUrl( request ) + request.getServletPath(  ).substring( 1 );
+    }
+
 
 
    

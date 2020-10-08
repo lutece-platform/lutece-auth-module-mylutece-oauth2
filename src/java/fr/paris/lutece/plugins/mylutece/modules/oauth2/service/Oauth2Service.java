@@ -72,6 +72,8 @@ public final class Oauth2Service {
 	private static String[] ATTRIBUTE_USER_KEY_NAME;
 	private static final String SEPARATOR = ",";
 	private static Oauth2Service _singleton;
+	
+	
 
 	/**
 	 * private constructor
@@ -251,4 +253,6 @@ public final class Oauth2Service {
 
 		response.sendRedirect(strNextURL);
 	}
+	
+	
 }
