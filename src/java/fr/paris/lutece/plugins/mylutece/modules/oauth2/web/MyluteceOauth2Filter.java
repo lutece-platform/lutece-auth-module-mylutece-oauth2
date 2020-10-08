@@ -215,8 +215,7 @@ public class MyluteceOauth2Filter implements Filter
     		{
     			bReturn=! _listUsePromptWhiteUrls.stream().anyMatch(x-> matchUrl(request, x));		
     		}
-    		
-    		return bReturn;
+    				
     			
     	}
     	else
