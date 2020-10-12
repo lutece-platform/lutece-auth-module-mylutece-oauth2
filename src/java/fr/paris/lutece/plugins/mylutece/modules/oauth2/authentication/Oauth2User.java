@@ -40,23 +40,33 @@ import fr.paris.lutece.portal.service.security.LuteceUser;
 import java.io.Serializable;
 
 
+// TODO: Auto-generated Javadoc
 /**
  * This class implements The Lutece User in a OpenID configuration.
  */
 public class Oauth2User extends LuteceUser implements Serializable
 {
+    
+    /** The Constant ACCESS_TOKEN. */
     public static final String ACCESS_TOKEN = "oauth2.user.accessToken";
 
+    /** The Constant serialVersionUID. */
     private static final long serialVersionUID = 1L;
+    
+    /** The str email. */
     private String _strEmail;
+    
+    /** The token. */
     private Token _token;
 
 
     
 
     /**
-     * Constructor
+     * Constructor.
+     *
      * @param strUserName The user's name
+     * @param token the token
      * @param authenticationService The authentication service that authenticates the user
      */
     public Oauth2User( String strUserName,Token token, LuteceAuthentication authenticationService )
@@ -67,7 +77,9 @@ public class Oauth2User extends LuteceUser implements Serializable
     }
 
     /**
-     * {@inheritDoc }
+     * {@inheritDoc }.
+     *
+     * @return the email
      */
     @Override
     public String getEmail(  )
@@ -78,7 +90,8 @@ public class Oauth2User extends LuteceUser implements Serializable
    
 
     /**
-     * Sets the Email
+     * Sets the Email.
+     *
      * @param strEmail         The Email
      */
     public void setEmail( String strEmail )
@@ -87,11 +100,21 @@ public class Oauth2User extends LuteceUser implements Serializable
     }
     
     
+    /**
+     * Gets the token.
+     *
+     * @return the token
+     */
     public Token getToken( )
     {
         return _token;
     }
     
+    /**
+     * Sets the token.
+     *
+     * @param token the new token
+     */
     public void setToken(Token token )
     {
        _token=token;

@@ -56,33 +56,55 @@ import fr.paris.lutece.portal.service.security.SecurityService;
 import fr.paris.lutece.portal.service.util.AppPropertiesService;
 import fr.paris.lutece.portal.web.PortalJspBean;
 
+// TODO: Auto-generated Javadoc
 /**
- * France Connect Service
+ * France Connect Service.
  */
 public final class Oauth2Service {
+	
+	/** The Constant _authService. */
 	private static final Oauth2Authentication _authService = new Oauth2Authentication();
+	
+	/** The logger. */
 	private static Logger _logger = Logger.getLogger("lutece.oauth2");
+	
+	/** The Constant PROPERTY_USER_KEY_NAME. */
 	private static final String PROPERTY_USER_KEY_NAME = "mylutece-oauth2.attributeKeyUsername";
+	
+	/** The Constant PROPERTY_USER_MAPPING_ATTRIBUTES. */
 	private static final String PROPERTY_USER_MAPPING_ATTRIBUTES = "mylutece-oauth2.userMappingAttributes";
+	
+	/** The Constant PROPERTY_IDENTITY_ATTRIBUTE_KEY. */
 	private static final String PROPERTY_IDENTITY_ATTRIBUTE_KEY = "mylutece-oauth2.attributeIdentityKey";
+	
+	/** The Constant TOKEN_SUBJECT. */
 	private static final String TOKEN_SUBJECT="sub";
 	
+	/** The Constant CONSTANT_LUTECE_USER_PROPERTIES_PATH. */
 	private static final String CONSTANT_LUTECE_USER_PROPERTIES_PATH = "mylutece-oauth2.attribute";
+	
+	/** The attribute user mapping. */
 	private static Map<String, List<String>> ATTRIBUTE_USER_MAPPING;
+	
+	/** The attribute user key name. */
 	private static String[] ATTRIBUTE_USER_KEY_NAME;
+	
+	/** The Constant SEPARATOR. */
 	private static final String SEPARATOR = ",";
+	
+	/** The singleton. */
 	private static Oauth2Service _singleton;
 	
 	
 
 	/**
-	 * private constructor
+	 * private constructor.
 	 */
 	private Oauth2Service() {
 	}
 
 	/**
-	 * Gets the instance
+	 * Gets the instance.
 	 *
 	 * @return the instance
 	 */
@@ -135,12 +157,12 @@ public final class Oauth2Service {
 	}
 
 	/**
-	 * Process the authentication
+	 * Process the authentication.
 	 *
-	 * @param request
-	 *            The HTTP request
-	 * @param userInfo
-	 *            Users Info
+	 * @param request            The HTTP request
+	 * @param mapUserInfo the map user info
+	 * @param token the token
+	 * @return the oauth 2 user
 	 */
 	public  Oauth2User processAuthentication(HttpServletRequest request, Map<String, Object> mapUserInfo, Token token) {
 		
@@ -223,10 +245,9 @@ public final class Oauth2Service {
 	}
 
 	/**
-	 * Process the logout
+	 * Process the logout.
 	 *
-	 * @param request
-	 *            The HTTP request
+	 * @param request            The HTTP request
 	 */
 	public static void processLogout(HttpServletRequest request) {
 		_logger.debug("Process logout");
@@ -234,14 +255,11 @@ public final class Oauth2Service {
 	}
 
 	/**
-	 * redirect after login or logout
-	 * 
-	 * @param request
-	 *            The HTTP request
-	 * @param response
-	 *            The HTTP response
-	 * @throws IOException
-	 *             if an error occurs
+	 * redirect after login or logout.
+	 *
+	 * @param request            The HTTP request
+	 * @param response            The HTTP response
+	 * @throws IOException             if an error occurs
 	 */
 	public static void redirect(HttpServletRequest request, HttpServletResponse response) throws IOException {
 		String strNextURL = PortalJspBean.getLoginNextUrl(request);
