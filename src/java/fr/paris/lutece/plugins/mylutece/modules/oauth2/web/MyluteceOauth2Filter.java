@@ -211,7 +211,7 @@ public class MyluteceOauth2Filter implements Filter
     			
     		}
     		//test url white List
-    		if(bReturn && _listUsePromptWhiteUrls.size()>0)
+    		if(bReturn && _listUsePromptWhiteUrls!=null && _listUsePromptWhiteUrls.size()>0)
     		{
     			bReturn=! _listUsePromptWhiteUrls.stream().anyMatch(x-> matchUrl(request, x));		
     		}
