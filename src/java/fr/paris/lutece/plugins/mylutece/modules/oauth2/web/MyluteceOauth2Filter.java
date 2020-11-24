@@ -132,9 +132,10 @@ public class MyluteceOauth2Filter implements Filter
                         || session.getAttribute( AuthDataClient.SESSION_ERROR_LOGIN ) != null
                                 && session.getAttribute( AuthDataClient.SESSION_ERROR_LOGIN ).equals( AuthDataClient.REINIT_ERROR_LOGIN ) )
                 {
-                    session.setAttribute( AuthDataClient.SESSION_ERROR_LOGIN, AuthDataClient.REINIT_ERROR_LOGIN );
+                    session.setAttribute( AuthDataClient.SESSION_ERROR_LOGIN, "" );
                     String strRedirectLoginUrl = PortalJspBean.redirectLogin( request );
                     resp.sendRedirect( strRedirectLoginUrl + "&" + "complementary_parameter=" + URLEncoder.encode( PARAM_PROMPT_NONE ) );
+                   
                     return;
                 }
 
