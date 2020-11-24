@@ -52,6 +52,7 @@ import fr.paris.lutece.plugins.oauth2.business.Token;
 import fr.paris.lutece.plugins.oauth2.dataclient.AbstractDataClient;
 import fr.paris.lutece.plugins.oauth2.web.Constants;
 import fr.paris.lutece.portal.service.util.AppLogService;
+import fr.paris.lutece.portal.service.util.AppPathService;
 import fr.paris.lutece.portal.web.PortalJspBean;
 
 /**
@@ -125,7 +126,12 @@ public class AuthDataClient extends AbstractDataClient
             {
 
                 String strLoginNextUrl = PortalJspBean.getLoginNextUrl( request );
-
+                //if the is not not next url in session get default next Url
+                if(strLoginNextUrl==null)
+                {
+                    strLoginNextUrl = AppPathService.getAbsoluteUrl( request, MyLuteceApp.getDefaultRedirectUrl( )) ;
+                }
+                //if SESSION_ERROR_LOGIN attribute is not store in session added this information in the redirect url
                 if ( strLoginNextUrl!=null && session.getAttribute( AuthDataClient.SESSION_ERROR_LOGIN ) == null )
                 {
                     if ( strLoginNextUrl.contains( "?" ) )
@@ -139,11 +145,7 @@ public class AuthDataClient extends AbstractDataClient
                     }
                     strLoginNextUrl += AuthDataClient.PARAM_ERROR_LOGIN + "=" + AuthDataClient.ERROR_TYPE_LOGIN_REQUIRED;
                 }
-                else
-                {
-                    strLoginNextUrl.equals( MyLuteceApp.getDefaultRedirectUrl( ) );
-                }
-
+                 
                 response.sendRedirect( strLoginNextUrl );
             }
             catch( IOException e )
