@@ -63,10 +63,9 @@ public class AuthDataClient extends AbstractDataClient
 
     public static final String ERROR_TYPE_LOGIN_REQUIRED = "login_required";
     public static final String REINIT_ERROR_LOGIN = "reinit_error_login";
-    
     public static final String SESSION_ERROR_LOGIN = "session_error_login";
     public static final String PARAM_ERROR_LOGIN = "error_login";
-
+    public static final String PARAM_NEXT_URL = "next_url";
     private static ObjectMapper _mapper;
 
     static
@@ -125,11 +124,11 @@ public class AuthDataClient extends AbstractDataClient
             try
             {
 
-                String strLoginNextUrl = PortalJspBean.getLoginNextUrl( request );
-                //if the is not next url in session get default next Url
+                 String strLoginNextUrl = PortalJspBean.getLoginNextUrl( request );
+                 //if the is not next url in session get default next Url
                 if(strLoginNextUrl==null)
                 {
-                    strLoginNextUrl = AppPathService.getAbsoluteUrl( request, MyLuteceApp.getDefaultRedirectUrl( )) ;
+                    strLoginNextUrl = AppPathService.getAbsoluteUrl( request, AppPathService.getRootForwardUrl()) ;
                 }
                 //if SESSION_ERROR_LOGIN attribute is not store in session added this information in the redirect url
                 if ( strLoginNextUrl!=null && session.getAttribute( AuthDataClient.SESSION_ERROR_LOGIN ) == null )
@@ -169,7 +168,7 @@ public class AuthDataClient extends AbstractDataClient
             		AppLogService.error( "Oauth 2 error  "+strError+  " redirect on default url" );
             	}
             	
-            	response.sendRedirect(AppPathService.getAbsoluteUrl( request, MyLuteceApp.getDefaultRedirectUrl( )) );
+            	response.sendRedirect(AppPathService.getAbsoluteUrl( request, AppPathService.getRootForwardUrl()));
             }
             catch( IOException e )
             {
