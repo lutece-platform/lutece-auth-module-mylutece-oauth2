@@ -161,7 +161,7 @@ public class AuthDataClient extends AbstractDataClient
              
             	if(Constants.ERROR_TYPE_INVALID_STATE.equals( strError ) || Constants.ERROR_TYPE_RETRIEVING_AUTHORIZATION_CODE.equals( strError ) )
             	{
-            		AppLogService.debug( "Oauth 2 error  "+strError+  " redirect on default url" );
+            		AppLogService.info( "Oauth 2 error  "+strError+  " redirect on default url" );
             	}
             	else
             	{
