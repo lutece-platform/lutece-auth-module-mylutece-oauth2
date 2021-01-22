@@ -269,6 +269,8 @@ public final class Oauth2Service {
 			strNextURL = MyLuteceApp.getDefaultRedirectUrl( );
 		}
 
+		strNextURL = response.encodeRedirectURL( strNextURL );
+
 		response.sendRedirect(strNextURL);
 	}
 	

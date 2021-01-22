@@ -130,6 +130,7 @@ public class AuthDataClient extends AbstractDataClient
                 {
                     strLoginNextUrl = AppPathService.getAbsoluteUrl( request, AppPathService.getRootForwardUrl()) ;
                 }
+                strLoginNextUrl = response.encodeRedirectURL( strLoginNextUrl );
                 //if SESSION_ERROR_LOGIN attribute is not store in session added this information in the redirect url
                 if ( strLoginNextUrl!=null && session.getAttribute( AuthDataClient.SESSION_ERROR_LOGIN ) == null )
                 {
