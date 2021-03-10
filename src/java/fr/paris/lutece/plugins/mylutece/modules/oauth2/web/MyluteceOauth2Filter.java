@@ -157,6 +157,10 @@ public class MyluteceOauth2Filter implements Filter
                 		oauth2User.setToken(token);
                 	}
                 }
+                else
+                {
+                	SecurityService.getInstance().logoutUser(request);
+                }
             }
           if( !Oauth2LuteceUserSessionService.getInstance(  )
             .isLuteceUserUpToDate( request.getSession( true ).getId(  ) ))
