@@ -52,7 +52,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import org.apache.commons.collections.map.HashedMap;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import fr.paris.lutece.plugins.mylutece.modules.oauth2.authentication.AuthDataClient;
 import fr.paris.lutece.plugins.mylutece.modules.oauth2.authentication.Oauth2Authentication;
