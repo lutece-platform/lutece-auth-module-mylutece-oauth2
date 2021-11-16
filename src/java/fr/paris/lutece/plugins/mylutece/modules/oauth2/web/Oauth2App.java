@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2002-2017, Mairie de Paris
+ * Copyright (c) 2002-2021, City of Paris
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -45,7 +45,6 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
-
 /**
  * France Connect XPage Application
  */
@@ -66,13 +65,15 @@ public class Oauth2App extends MVCApplication
 
     /**
      * Build the Login page
-     * @param request The HTTP request
+     * 
+     * @param request
+     *            The HTTP request
      * @return The XPage object containing the page content
      */
     @View( value = VIEW_HOME, defaultView = true )
     public XPage getHomePage( HttpServletRequest request )
     {
-        Map<String, Object> model = getModel(  );
+        Map<String, Object> model = getModel( );
 
         String strError = request.getParameter( Constants.PARAMETER_ERROR );
 
@@ -81,12 +82,12 @@ public class Oauth2App extends MVCApplication
             addError( strError );
         }
 
-        LuteceUser user = SecurityService.getInstance(  ).getRegisteredUser( request );
+        LuteceUser user = SecurityService.getInstance( ).getRegisteredUser( request );
 
         model.put( MARK_USER, user );
-        model.put( MARK_URL_DOLOGIN, MyLuteceApp.getDoLoginUrl(  ) );
-        model.put( MARK_URL_DOLOGOUT, MyLuteceApp.getDoLogoutUrl(  ) );
+        model.put( MARK_URL_DOLOGIN, MyLuteceApp.getDoLoginUrl( ) );
+        model.put( MARK_URL_DOLOGOUT, MyLuteceApp.getDoLogoutUrl( ) );
 
-        return getXPage( TEMPLATE_LOGIN_PAGE, request.getLocale(  ), model );
+        return getXPage( TEMPLATE_LOGIN_PAGE, request.getLocale( ), model );
     }
 }

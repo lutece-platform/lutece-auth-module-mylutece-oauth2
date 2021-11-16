@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2002-2013, Mairie de Paris
+ * Copyright (c) 2002-2021, City of Paris
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -46,7 +46,7 @@ public class Oauth2LuteceUserSession
         _bUpToDate = bUpToDate;
     }
 
-    public String getIdSession(  )
+    public String getIdSession( )
     {
         return _strIdSession;
     }
@@ -56,7 +56,7 @@ public class Oauth2LuteceUserSession
         this._strIdSession = _strIdSession;
     }
 
-    public String getLuteceUserName(  )
+    public String getLuteceUserName( )
     {
         return _strLuteceUserName;
     }
@@ -66,7 +66,7 @@ public class Oauth2LuteceUserSession
         this._strLuteceUserName = _strLuteceUserName;
     }
 
-    public boolean isUpToDate(  )
+    public boolean isUpToDate( )
     {
         return _bUpToDate;
     }

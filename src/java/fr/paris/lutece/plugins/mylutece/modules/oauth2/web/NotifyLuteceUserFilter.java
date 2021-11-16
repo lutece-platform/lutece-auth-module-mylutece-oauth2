@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2002-2014, Mairie de Paris
+ * Copyright (c) 2002-2021, City of Paris
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -48,7 +48,6 @@ import org.apache.commons.lang3.StringUtils;
 
 import fr.paris.lutece.plugins.mylutece.modules.oauth2.service.Oauth2LuteceUserSessionService;
 
-
 /**
  * ParisConnectLuteceFilters
  *
@@ -62,7 +61,7 @@ public class NotifyLuteceUserFilter implements Filter
      * {@inheritDoc}
      */
     @Override
-    public void destroy(  )
+    public void destroy( )
     {
         // nothing
     }
@@ -72,8 +71,7 @@ public class NotifyLuteceUserFilter implements Filter
      * {@inheritDoc}
      */
     @Override
-    public void doFilter( ServletRequest servletRequest, ServletResponse servletResponse, FilterChain chain )
-        throws IOException, ServletException
+    public void doFilter( ServletRequest servletRequest, ServletResponse servletResponse, FilterChain chain ) throws IOException, ServletException
     {
         HttpServletRequest request = (HttpServletRequest) servletRequest;
         HttpServletResponse response = (HttpServletResponse) servletResponse;
@@ -82,7 +80,7 @@ public class NotifyLuteceUserFilter implements Filter
 
         if ( !StringUtils.isEmpty( strGuidParameter ) )
         {
-            Oauth2LuteceUserSessionService.getInstance(  ).notifyLuteceUserUpdating( strGuidParameter );
+            Oauth2LuteceUserSessionService.getInstance( ).notifyLuteceUserUpdating( strGuidParameter );
         }
 
         response.setStatus( HttpServletResponse.SC_OK );

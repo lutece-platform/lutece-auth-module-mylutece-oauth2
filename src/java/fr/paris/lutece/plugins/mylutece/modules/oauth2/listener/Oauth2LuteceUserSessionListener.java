@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2002-2014, Mairie de Paris
+ * Copyright (c) 2002-2021, City of Paris
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -33,12 +33,10 @@
  */
 package fr.paris.lutece.plugins.mylutece.modules.oauth2.listener;
 
-
 import javax.servlet.http.HttpSessionEvent;
 import javax.servlet.http.HttpSessionListener;
 
 import fr.paris.lutece.plugins.mylutece.modules.oauth2.service.Oauth2LuteceUserSessionService;
-
 
 /**
  * Oauth2LuteceUserSessionListener
@@ -59,6 +57,6 @@ public final class Oauth2LuteceUserSessionListener implements HttpSessionListene
     @Override
     public void sessionDestroyed( HttpSessionEvent sessionEvent )
     {
-        Oauth2LuteceUserSessionService.getInstance(  ).removeLuteceUserSession( sessionEvent.getSession(  ).getId(  ) );
+        Oauth2LuteceUserSessionService.getInstance( ).removeLuteceUserSession( sessionEvent.getSession( ).getId( ) );
     }
 }

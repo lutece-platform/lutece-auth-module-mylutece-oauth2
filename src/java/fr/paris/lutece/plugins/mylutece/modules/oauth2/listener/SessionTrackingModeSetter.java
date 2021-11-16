@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2002-2021, Mairie de Paris
+ * Copyright (c) 2002-2021, City of Paris
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -39,21 +39,24 @@ import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
 import javax.servlet.SessionTrackingMode;
 import javax.servlet.annotation.WebListener;
+
 /**
  * 
  * SessionTrackingModeSetter set Session TrackingMode
  *
  */
 @WebListener
-public class SessionTrackingModeSetter implements ServletContextListener {
+public class SessionTrackingModeSetter implements ServletContextListener
+{
 
     @Override
-    public void contextInitialized (ServletContextEvent event) {
-        event.getServletContext()
-             .setSessionTrackingModes(EnumSet.of(SessionTrackingMode.COOKIE));
+    public void contextInitialized( ServletContextEvent event )
+    {
+        event.getServletContext( ).setSessionTrackingModes( EnumSet.of( SessionTrackingMode.COOKIE ) );
     }
 
     @Override
-    public void contextDestroyed (ServletContextEvent sce) {
+    public void contextDestroyed( ServletContextEvent sce )
+    {
     }
 }

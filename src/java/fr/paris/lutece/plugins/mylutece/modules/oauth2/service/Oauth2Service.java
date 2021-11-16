@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2002-2017, Mairie de Paris
+ * Copyright (c) 2002-2021, City of Paris
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -60,219 +60,249 @@ import fr.paris.lutece.portal.web.PortalJspBean;
 /**
  * France Connect Service.
  */
-public final class Oauth2Service {
-	
-	/** The Constant _authService. */
-	private static final Oauth2Authentication _authService = new Oauth2Authentication();
-	
-	/** The logger. */
-	private static Logger _logger = Logger.getLogger("lutece.oauth2");
-	
-	/** The Constant PROPERTY_USER_KEY_NAME. */
-	private static final String PROPERTY_USER_KEY_NAME = "mylutece-oauth2.attributeKeyUsername";
-	
-	/** The Constant PROPERTY_USER_MAPPING_ATTRIBUTES. */
-	private static final String PROPERTY_USER_MAPPING_ATTRIBUTES = "mylutece-oauth2.userMappingAttributes";
-	
-	/** The Constant PROPERTY_IDENTITY_ATTRIBUTE_KEY. */
-	private static final String PROPERTY_IDENTITY_ATTRIBUTE_KEY = "mylutece-oauth2.attributeIdentityKey";
-	
-	/** The Constant TOKEN_SUBJECT. */
-	private static final String TOKEN_SUBJECT="sub";
-	
-	/** The Constant CONSTANT_LUTECE_USER_PROPERTIES_PATH. */
-	private static final String CONSTANT_LUTECE_USER_PROPERTIES_PATH = "mylutece-oauth2.attribute";
-	
-	/** The attribute user mapping. */
-	private static Map<String, List<String>> ATTRIBUTE_USER_MAPPING;
-	
-	/** The attribute user key name. */
-	private static String[] ATTRIBUTE_USER_KEY_NAME;
-	
-	/** The Constant SEPARATOR. */
-	private static final String SEPARATOR = ",";
-	
-	/** The singleton. */
-	private static Oauth2Service _singleton;
-	
-	
+public final class Oauth2Service
+{
 
-	/**
-	 * private constructor.
-	 */
-	private Oauth2Service() {
-	}
+    /** The Constant _authService. */
+    private static final Oauth2Authentication _authService = new Oauth2Authentication( );
 
-	/**
-	 * Gets the instance.
-	 *
-	 * @return the instance
-	 */
-	public static Oauth2Service getInstance() {
-		if (_singleton == null) {
-			
-			_singleton=new Oauth2Service();
-			String strTabUserKey = AppPropertiesService.getProperty(PROPERTY_USER_KEY_NAME);
-			if (StringUtils.isNotBlank(strTabUserKey)) {
-				ATTRIBUTE_USER_KEY_NAME = strTabUserKey.split(SEPARATOR);
-			}
-			String strUserMappingAttributes = AppPropertiesService.getProperty(PROPERTY_USER_MAPPING_ATTRIBUTES);
-			ATTRIBUTE_USER_MAPPING = new HashMap<String, List<String>>();
+    /** The logger. */
+    private static Logger _logger = Logger.getLogger( "lutece.oauth2" );
 
-			if (StringUtils.isNotBlank(strUserMappingAttributes)) {
-				String[] tabUserProperties = strUserMappingAttributes.split(SEPARATOR);
-				String[] tabPropertiesValues;
-				String userProperties;
+    /** The Constant PROPERTY_USER_KEY_NAME. */
+    private static final String PROPERTY_USER_KEY_NAME = "mylutece-oauth2.attributeKeyUsername";
 
-				for (int i = 0; i < tabUserProperties.length; i++) {
-					userProperties = AppPropertiesService
-							.getProperty(CONSTANT_LUTECE_USER_PROPERTIES_PATH + "." + tabUserProperties[i]);
+    /** The Constant PROPERTY_USER_MAPPING_ATTRIBUTES. */
+    private static final String PROPERTY_USER_MAPPING_ATTRIBUTES = "mylutece-oauth2.userMappingAttributes";
 
-					if (StringUtils.isNotBlank(userProperties)) {
+    /** The Constant PROPERTY_IDENTITY_ATTRIBUTE_KEY. */
+    private static final String PROPERTY_IDENTITY_ATTRIBUTE_KEY = "mylutece-oauth2.attributeIdentityKey";
 
-						if (userProperties.contains(SEPARATOR)) {
-							tabPropertiesValues = userProperties.split(SEPARATOR);
+    /** The Constant TOKEN_SUBJECT. */
+    private static final String TOKEN_SUBJECT = "sub";
 
-							for (int n = 0; i < tabPropertiesValues.length; n++) {
-								if (!ATTRIBUTE_USER_MAPPING.containsKey(tabPropertiesValues[n])) {
-									ATTRIBUTE_USER_MAPPING.put(tabPropertiesValues[n], new ArrayList<String>());
-								}
-								ATTRIBUTE_USER_MAPPING.get(tabPropertiesValues[n]).add(tabUserProperties[i]);
-							}
+    /** The Constant CONSTANT_LUTECE_USER_PROPERTIES_PATH. */
+    private static final String CONSTANT_LUTECE_USER_PROPERTIES_PATH = "mylutece-oauth2.attribute";
 
-						} else {
+    /** The attribute user mapping. */
+    private static Map<String, List<String>> ATTRIBUTE_USER_MAPPING;
 
-							if (!ATTRIBUTE_USER_MAPPING.containsKey(userProperties)) {
-								ATTRIBUTE_USER_MAPPING.put(userProperties, new ArrayList<String>());
-							}
-							ATTRIBUTE_USER_MAPPING.get(userProperties).add(tabUserProperties[i]);
-						}
+    /** The attribute user key name. */
+    private static String [ ] ATTRIBUTE_USER_KEY_NAME;
 
-					}
-				}
-			}
-		}
+    /** The Constant SEPARATOR. */
+    private static final String SEPARATOR = ",";
 
-		return _singleton;
-	}
+    /** The singleton. */
+    private static Oauth2Service _singleton;
 
-	/**
-	 * Process the authentication.
-	 *
-	 * @param request            The HTTP request
-	 * @param mapUserInfo the map user info
-	 * @param token the token
-	 * @return the oauth 2 user
-	 */
-	public  Oauth2User processAuthentication(HttpServletRequest request, Map<String, Object> mapUserInfo, Token token) {
-		
-	    //subject in user map
-	    if(token.getIdToken( )!=null && token.getIdToken( ).getSubject( )!=null)
-	    {
-	        mapUserInfo.put( TOKEN_SUBJECT, token.getIdToken( ).getSubject( ) );
-	        
-	    }
-	    Oauth2User user = null;
-		for (int i = 0; i < ATTRIBUTE_USER_KEY_NAME.length; i++) {
+    /**
+     * private constructor.
+     */
+    private Oauth2Service( )
+    {
+    }
 
-			if (mapUserInfo.containsKey(ATTRIBUTE_USER_KEY_NAME[i])) {
-				user = new Oauth2User((String) mapUserInfo.get(ATTRIBUTE_USER_KEY_NAME[i]),token, _authService);
-			}
-		}
+    /**
+     * Gets the instance.
+     *
+     * @return the instance
+     */
+    public static Oauth2Service getInstance( )
+    {
+        if ( _singleton == null )
+        {
 
-		if (user != null) {
+            _singleton = new Oauth2Service( );
+            String strTabUserKey = AppPropertiesService.getProperty( PROPERTY_USER_KEY_NAME );
+            if ( StringUtils.isNotBlank( strTabUserKey ) )
+            {
+                ATTRIBUTE_USER_KEY_NAME = strTabUserKey.split( SEPARATOR );
+            }
+            String strUserMappingAttributes = AppPropertiesService.getProperty( PROPERTY_USER_MAPPING_ATTRIBUTES );
+            ATTRIBUTE_USER_MAPPING = new HashMap<String, List<String>>( );
 
-			for (Entry<String, Object> entry : mapUserInfo.entrySet()) {
-				if (ATTRIBUTE_USER_MAPPING.containsKey(entry.getKey())) {
-					for (String strUserInfo : ATTRIBUTE_USER_MAPPING.get(entry.getKey())) {
-						Object val = entry.getValue();
-						if (val instanceof ArrayList<?>) {
-							
-							
-							StringBuffer strBufVal=new StringBuffer();
-							for (String tabVal:(ArrayList<String>)val) {
-								strBufVal.append(tabVal);
-								strBufVal.append(SEPARATOR);
-								}
-							if(strBufVal.length()>0)
-							{
-								user.setUserInfo(strUserInfo,strBufVal.substring(0,strBufVal.length()-1) );
-							}
-							
-							user.setUserInfo(strUserInfo,strBufVal.toString() );
+            if ( StringUtils.isNotBlank( strUserMappingAttributes ) )
+            {
+                String [ ] tabUserProperties = strUserMappingAttributes.split( SEPARATOR );
+                String [ ] tabPropertiesValues;
+                String userProperties;
 
-						} else {
-							user.setUserInfo(strUserInfo, (String) val);
-
-						}
-					}
-				}
-				//set Email in lutece User
-				if(!StringUtils.isEmpty(user.getUserInfo( LuteceUser.HOME_INFO_ONLINE_EMAIL )))
-				{
-				    user.setEmail( user.getUserInfo( LuteceUser.HOME_INFO_ONLINE_EMAIL ));
-				    
-				}
-				else if(!StringUtils.isEmpty(user.getUserInfo( LuteceUser.BUSINESS_INFO_ONLINE_EMAIL )))
+                for ( int i = 0; i < tabUserProperties.length; i++ )
                 {
-                    user.setEmail( user.getUserInfo( LuteceUser.BUSINESS_INFO_ONLINE_EMAIL ));
-                    
+                    userProperties = AppPropertiesService.getProperty( CONSTANT_LUTECE_USER_PROPERTIES_PATH + "." + tabUserProperties [i] );
+
+                    if ( StringUtils.isNotBlank( userProperties ) )
+                    {
+
+                        if ( userProperties.contains( SEPARATOR ) )
+                        {
+                            tabPropertiesValues = userProperties.split( SEPARATOR );
+
+                            for ( int n = 0; i < tabPropertiesValues.length; n++ )
+                            {
+                                if ( !ATTRIBUTE_USER_MAPPING.containsKey( tabPropertiesValues [n] ) )
+                                {
+                                    ATTRIBUTE_USER_MAPPING.put( tabPropertiesValues [n], new ArrayList<String>( ) );
+                                }
+                                ATTRIBUTE_USER_MAPPING.get( tabPropertiesValues [n] ).add( tabUserProperties [i] );
+                            }
+
+                        }
+                        else
+                        {
+
+                            if ( !ATTRIBUTE_USER_MAPPING.containsKey( userProperties ) )
+                            {
+                                ATTRIBUTE_USER_MAPPING.put( userProperties, new ArrayList<String>( ) );
+                            }
+                            ATTRIBUTE_USER_MAPPING.get( userProperties ).add( tabUserProperties [i] );
+                        }
+
+                    }
                 }
-				
-				    
-			}
-			
-			//add Identities Informations
-			//get Identity key the default key is the value of lutece user name
-			String strIdentityKey=user.getName();
-			String strIdentityKeyAttribute=AppPropertiesService.getProperty(PROPERTY_IDENTITY_ATTRIBUTE_KEY);
-			if(strIdentityKeyAttribute!=null && mapUserInfo.containsKey(strIdentityKeyAttribute) )
-			{
-				strIdentityKey= mapUserInfo.get(strIdentityKeyAttribute).toString();
-			}
-			
+            }
+        }
+
+        return _singleton;
+    }
+
+    /**
+     * Process the authentication.
+     *
+     * @param request
+     *            The HTTP request
+     * @param mapUserInfo
+     *            the map user info
+     * @param token
+     *            the token
+     * @return the oauth 2 user
+     */
+    public Oauth2User processAuthentication( HttpServletRequest request, Map<String, Object> mapUserInfo, Token token )
+    {
+
+        // subject in user map
+        if ( token.getIdToken( ) != null && token.getIdToken( ).getSubject( ) != null )
+        {
+            mapUserInfo.put( TOKEN_SUBJECT, token.getIdToken( ).getSubject( ) );
+
+        }
+        Oauth2User user = null;
+        for ( int i = 0; i < ATTRIBUTE_USER_KEY_NAME.length; i++ )
+        {
+
+            if ( mapUserInfo.containsKey( ATTRIBUTE_USER_KEY_NAME [i] ) )
+            {
+                user = new Oauth2User( (String) mapUserInfo.get( ATTRIBUTE_USER_KEY_NAME [i] ), token, _authService );
+            }
+        }
+
+        if ( user != null )
+        {
+
+            for ( Entry<String, Object> entry : mapUserInfo.entrySet( ) )
+            {
+                if ( ATTRIBUTE_USER_MAPPING.containsKey( entry.getKey( ) ) )
+                {
+                    for ( String strUserInfo : ATTRIBUTE_USER_MAPPING.get( entry.getKey( ) ) )
+                    {
+                        Object val = entry.getValue( );
+                        if ( val instanceof ArrayList<?> )
+                        {
+
+                            StringBuffer strBufVal = new StringBuffer( );
+                            for ( String tabVal : (ArrayList<String>) val )
+                            {
+                                strBufVal.append( tabVal );
+                                strBufVal.append( SEPARATOR );
+                            }
+                            if ( strBufVal.length( ) > 0 )
+                            {
+                                user.setUserInfo( strUserInfo, strBufVal.substring( 0, strBufVal.length( ) - 1 ) );
+                            }
+
+                            user.setUserInfo( strUserInfo, strBufVal.toString( ) );
+
+                        }
+                        else
+                        {
+                            user.setUserInfo( strUserInfo, (String) val );
+
+                        }
+                    }
+                }
+                // set Email in lutece User
+                if ( !StringUtils.isEmpty( user.getUserInfo( LuteceUser.HOME_INFO_ONLINE_EMAIL ) ) )
+                {
+                    user.setEmail( user.getUserInfo( LuteceUser.HOME_INFO_ONLINE_EMAIL ) );
+
+                }
+                else
+                    if ( !StringUtils.isEmpty( user.getUserInfo( LuteceUser.BUSINESS_INFO_ONLINE_EMAIL ) ) )
+                    {
+                        user.setEmail( user.getUserInfo( LuteceUser.BUSINESS_INFO_ONLINE_EMAIL ) );
+
+                    }
+
+            }
+
+            // add Identities Informations
+            // get Identity key the default key is the value of lutece user name
+            String strIdentityKey = user.getName( );
+            String strIdentityKeyAttribute = AppPropertiesService.getProperty( PROPERTY_IDENTITY_ATTRIBUTE_KEY );
+            if ( strIdentityKeyAttribute != null && mapUserInfo.containsKey( strIdentityKeyAttribute ) )
+            {
+                strIdentityKey = mapUserInfo.get( strIdentityKeyAttribute ).toString( );
+            }
+
             user.setName( strIdentityKey );
             MyLuteceUserService.provideUserExternalInfos( user );
-            
-                // add Oauth2LuteceUserSessionService session
+
+            // add Oauth2LuteceUserSessionService session
             Oauth2LuteceUserSessionService.getInstance( ).addLuteceUserSession( user.getName( ), request.getSession( true ).getId( ) );
-                
-		}
 
-		SecurityService.getInstance().registerUser(request, user);
-		
-		return user;
-	}
+        }
 
-	/**
-	 * Process the logout.
-	 *
-	 * @param request            The HTTP request
-	 */
-	public static void processLogout(HttpServletRequest request) {
-		_logger.debug("Process logout");
-		SecurityService.getInstance().logoutUser(request);
-	}
+        SecurityService.getInstance( ).registerUser( request, user );
 
-	/**
-	 * redirect after login or logout.
-	 *
-	 * @param request            The HTTP request
-	 * @param response            The HTTP response
-	 * @throws IOException             if an error occurs
-	 */
-	public static void redirect(HttpServletRequest request, HttpServletResponse response) throws IOException {
-		String strNextURL = PortalJspBean.getLoginNextUrl(request);
-		_logger.info("Next URL : " + strNextURL);
+        return user;
+    }
 
-		if (strNextURL == null) {
-			strNextURL = MyLuteceApp.getDefaultRedirectUrl( );
-		}
+    /**
+     * Process the logout.
+     *
+     * @param request
+     *            The HTTP request
+     */
+    public static void processLogout( HttpServletRequest request )
+    {
+        _logger.debug( "Process logout" );
+        SecurityService.getInstance( ).logoutUser( request );
+    }
 
-		strNextURL = response.encodeRedirectURL( strNextURL );
+    /**
+     * redirect after login or logout.
+     *
+     * @param request
+     *            The HTTP request
+     * @param response
+     *            The HTTP response
+     * @throws IOException
+     *             if an error occurs
+     */
+    public static void redirect( HttpServletRequest request, HttpServletResponse response ) throws IOException
+    {
+        String strNextURL = PortalJspBean.getLoginNextUrl( request );
+        _logger.info( "Next URL : " + strNextURL );
 
-		response.sendRedirect(strNextURL);
-	}
-	
-	
+        if ( strNextURL == null )
+        {
+            strNextURL = MyLuteceApp.getDefaultRedirectUrl( );
+        }
+
+        strNextURL = response.encodeRedirectURL( strNextURL );
+
+        response.sendRedirect( strNextURL );
+    }
+
 }

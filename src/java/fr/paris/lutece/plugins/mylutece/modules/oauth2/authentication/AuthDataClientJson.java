@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2002-2017, Mairie de Paris
+ * Copyright (c) 2002-2021, City of Paris
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -52,7 +52,6 @@ import fr.paris.lutece.portal.service.security.SecurityService;
 import fr.paris.lutece.util.json.JsonResponse;
 import fr.paris.lutece.util.json.JsonUtil;
 
-
 /**
  * UserInfoDataClient
  */
@@ -62,7 +61,7 @@ public class AuthDataClientJson extends AbstractDataClient
 
     static
     {
-        _mapper = new ObjectMapper(  );
+        _mapper = new ObjectMapper( );
         _mapper.disable( DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES );
     }
 
@@ -70,21 +69,21 @@ public class AuthDataClientJson extends AbstractDataClient
      * {@inheritDoc }
      */
     @Override
-    public void handleToken( Token token , HttpServletRequest  request , HttpServletResponse  response )
+    public void handleToken( Token token, HttpServletRequest request, HttpServletResponse response )
     {
         try
         {
-            Map<String,Object> mapUserInfo=parse( getData( token ) );
-            Oauth2Service.getInstance().processAuthentication( request, mapUserInfo, token );
-            
-            LuteceUser user = SecurityService.getInstance(  ).getRegisteredUser( request );
-            byte[] strJsonResultAUth=JsonUtil.buildJsonResponse( new JsonResponse(user!=null) ).getBytes( );
-            response.setContentType("application/json");
-            response.setContentLength(strJsonResultAUth.length);
-            response.getOutputStream().write( strJsonResultAUth) ;
-            
+            Map<String, Object> mapUserInfo = parse( getData( token ) );
+            Oauth2Service.getInstance( ).processAuthentication( request, mapUserInfo, token );
+
+            LuteceUser user = SecurityService.getInstance( ).getRegisteredUser( request );
+            byte [ ] strJsonResultAUth = JsonUtil.buildJsonResponse( new JsonResponse( user != null ) ).getBytes( );
+            response.setContentType( "application/json" );
+            response.setContentLength( strJsonResultAUth.length );
+            response.getOutputStream( ).write( strJsonResultAUth );
+
         }
-        catch ( IOException ex )
+        catch( IOException ex )
         {
             _logger.error( "Error parsing UserInfo ", ex );
         }
@@ -92,15 +91,19 @@ public class AuthDataClientJson extends AbstractDataClient
 
     /**
      * parse the JSON for a token
-     * @param strJson The JSON
+     * 
+     * @param strJson
+     *            The JSON
      * @return The UserInfo
-     * @throws java.io.IOException if an error occurs
+     * @throws java.io.IOException
+     *             if an error occurs
      */
-    Map<String,Object> parse( String strJson ) throws IOException
+    Map<String, Object> parse( String strJson ) throws IOException
     {
-    	TypeReference<HashMap<String, Object>> typeRef 
-    	  = new TypeReference<HashMap<String, Object>>() {};
-    	
-    	return  _mapper.readValue(strJson, typeRef);
+        TypeReference<HashMap<String, Object>> typeRef = new TypeReference<HashMap<String, Object>>( )
+        {
+        };
+
+        return _mapper.readValue( strJson, typeRef );
     }
 }

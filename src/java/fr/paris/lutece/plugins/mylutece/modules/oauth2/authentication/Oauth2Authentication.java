@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2002-2017, Mairie de Paris
+ * Copyright (c) 2002-2021, City of Paris
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -51,10 +51,8 @@ import fr.paris.lutece.portal.service.security.SecurityService;
 import fr.paris.lutece.portal.service.util.AppLogService;
 import fr.paris.lutece.portal.service.util.AppPropertiesService;
 
-
 /**
- * The Class provides an implementation of the inherited abstract class
- * PortalAuthentication based on OpenID
+ * The Class provides an implementation of the inherited abstract class PortalAuthentication based on OpenID
  */
 public class Oauth2Authentication extends PortalAuthentication implements Serializable
 {
@@ -64,7 +62,7 @@ public class Oauth2Authentication extends PortalAuthentication implements Serial
     private static final String CONSTANT_PATH_ICON = "images/local/skin/plugins/mylutece/modules/openid/mylutece-openid.png";
     private static final String PLUGIN_NAME = "mylutece-openid";
     private static final long serialVersionUID = 1L;
-    private static final String authDataClientName="authData";
+    private static final String authDataClientName = "authData";
 
     /**
      * Gets the Authentification service name
@@ -72,7 +70,7 @@ public class Oauth2Authentication extends PortalAuthentication implements Serial
      * @return The name of the authentication service
      */
     @Override
-    public String getAuthServiceName(  )
+    public String getAuthServiceName( )
     {
         return AppPropertiesService.getProperty( PROPERTY_AUTH_SERVICE_NAME );
     }
@@ -80,7 +78,8 @@ public class Oauth2Authentication extends PortalAuthentication implements Serial
     /**
      * Gets the Authentification type
      *
-     * @param request The HTTP request
+     * @param request
+     *            The HTTP request
      * @return The type of authentication
      */
     @Override
@@ -94,24 +93,28 @@ public class Oauth2Authentication extends PortalAuthentication implements Serial
      *
      *
      * @return A LuteceUser object corresponding to the login
-     * @param strUserName The username
-     * @param strUserPassword The password
-     * @param request The HttpServletRequest
-     * @throws LoginRedirectException This exception is used to redirect the
-     * authentication to the provider
-     * @throws LoginException The LoginException
+     * @param strUserName
+     *            The username
+     * @param strUserPassword
+     *            The password
+     * @param request
+     *            The HttpServletRequest
+     * @throws LoginRedirectException
+     *             This exception is used to redirect the authentication to the provider
+     * @throws LoginException
+     *             The LoginException
      */
     @Override
-    public LuteceUser processLogin( String strUserName, String strUserPassword, HttpServletRequest request )
-        throws LoginException, LoginRedirectException
+    public LuteceUser processLogin( String strUserName, String strUserPassword, HttpServletRequest request ) throws LoginException, LoginRedirectException
     {
         return getHttpAuthenticatedUser( request );
     }
-    
+
     /**
      * This methods logout the user
      *
-     * @param user The user
+     * @param user
+     *            The user
      */
     @Override
     public void logout( LuteceUser user )
@@ -124,9 +127,9 @@ public class Oauth2Authentication extends PortalAuthentication implements Serial
      * @return An anonymous Lutece user
      */
     @Override
-    public LuteceUser getAnonymousUser(  )
+    public LuteceUser getAnonymousUser( )
     {
-        return new Oauth2User( LuteceUser.ANONYMOUS_USERNAME, null,this );
+        return new Oauth2User( LuteceUser.ANONYMOUS_USERNAME, null, this );
     }
 
     /**
@@ -134,7 +137,7 @@ public class Oauth2Authentication extends PortalAuthentication implements Serial
      * {@inheritDoc}
      */
     @Override
-    public String getIconUrl(  )
+    public String getIconUrl( )
     {
         return CONSTANT_PATH_ICON;
     }
@@ -144,7 +147,7 @@ public class Oauth2Authentication extends PortalAuthentication implements Serial
      * {@inheritDoc}
      */
     @Override
-    public String getName(  )
+    public String getName( )
     {
         return PLUGIN_NAME;
     }
@@ -154,7 +157,7 @@ public class Oauth2Authentication extends PortalAuthentication implements Serial
      * {@inheritDoc}
      */
     @Override
-    public String getPluginName(  )
+    public String getPluginName( )
     {
         return PLUGIN_NAME;
     }
@@ -164,10 +167,11 @@ public class Oauth2Authentication extends PortalAuthentication implements Serial
      * {@inheritDoc}
      */
     @Override
-    public boolean isMultiAuthenticationSupported(  )
+    public boolean isMultiAuthenticationSupported( )
     {
         return false;
     }
+
     /**
      * Returns a Lutece user object if the user is already authenticated by Openam
      * 
@@ -180,34 +184,32 @@ public class Oauth2Authentication extends PortalAuthentication implements Serial
     {
         LuteceUser user = null;
         user = SecurityService.getInstance( ).getRegisteredUser( request );
-        //Reload User if info
-        if ( user != null && user instanceof Oauth2User)
+        // Reload User if info
+        if ( user != null && user instanceof Oauth2User )
         {
-            Oauth2User userOauth= (Oauth2User)user;
-            if(userOauth.getToken( ).getRefreshToken( )!=null)
+            Oauth2User userOauth = (Oauth2User) user;
+            if ( userOauth.getToken( ).getRefreshToken( ) != null )
             {
-                
-                AuthDataClient authDataClient= (AuthDataClient)DataClientService.instance( ).getClient( authDataClientName );
-                Token token =TokenService.getService( ).getTokenByRefreshToken( userOauth.getToken( ).getRefreshToken( ) );
+
+                AuthDataClient authDataClient = (AuthDataClient) DataClientService.instance( ).getClient( authDataClientName );
+                Token token = TokenService.getService( ).getTokenByRefreshToken( userOauth.getToken( ).getRefreshToken( ) );
                 try
                 {
-                    Map<String, Object> mapUserInfo =authDataClient.parse(authDataClient.getData( token ));
+                    Map<String, Object> mapUserInfo = authDataClient.parse( authDataClient.getData( token ) );
                     return Oauth2Service.getInstance( ).processAuthentication( request, mapUserInfo, token );
-                    
+
                 }
                 catch( IOException e )
                 {
                     // TODO Auto-generated catch block
-                   AppLogService.error( "error during retrieving user info with refresh token  ", e);
+                    AppLogService.error( "error during retrieving user info with refresh token  ", e );
                 }
-                   
-                
-                
+
             }
-//            userOauth.getToken( )
-//            // add Openam LuteceUser session
-//            OpenamLuteceUserSessionService.getInstance( ).addLuteceUserSession( user.getName( ), request.getSession( true ).getId( ) );
-//        }
+            // userOauth.getToken( )
+            // // add Openam LuteceUser session
+            // OpenamLuteceUserSessionService.getInstance( ).addLuteceUserSession( user.getName( ), request.getSession( true ).getId( ) );
+            // }
         }
 
         return user;

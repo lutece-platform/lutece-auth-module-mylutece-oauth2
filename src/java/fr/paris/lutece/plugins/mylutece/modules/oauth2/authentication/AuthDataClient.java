@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2002-2017, Mairie de Paris
+ * Copyright (c) 2002-2021, City of Paris
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -124,15 +124,15 @@ public class AuthDataClient extends AbstractDataClient
             try
             {
 
-                 String strLoginNextUrl = PortalJspBean.getLoginNextUrl( request );
-                 //if the is not next url in session get default next Url
-                if(strLoginNextUrl==null)
+                String strLoginNextUrl = PortalJspBean.getLoginNextUrl( request );
+                // if the is not next url in session get default next Url
+                if ( strLoginNextUrl == null )
                 {
-                    strLoginNextUrl = AppPathService.getAbsoluteUrl( request, AppPathService.getRootForwardUrl()) ;
+                    strLoginNextUrl = AppPathService.getAbsoluteUrl( request, AppPathService.getRootForwardUrl( ) );
                 }
                 strLoginNextUrl = response.encodeRedirectURL( strLoginNextUrl );
-                //if SESSION_ERROR_LOGIN attribute is not store in session added this information in the redirect url
-                if ( strLoginNextUrl!=null && session.getAttribute( AuthDataClient.SESSION_ERROR_LOGIN ) == null )
+                // if SESSION_ERROR_LOGIN attribute is not store in session added this information in the redirect url
+                if ( strLoginNextUrl != null && session.getAttribute( AuthDataClient.SESSION_ERROR_LOGIN ) == null )
                 {
                     if ( strLoginNextUrl.contains( "?" ) )
                     {
@@ -145,7 +145,7 @@ public class AuthDataClient extends AbstractDataClient
                     }
                     strLoginNextUrl += AuthDataClient.PARAM_ERROR_LOGIN + "=" + AuthDataClient.ERROR_TYPE_LOGIN_REQUIRED;
                 }
-                 
+
                 response.sendRedirect( strLoginNextUrl );
             }
             catch( IOException e )
@@ -154,22 +154,21 @@ public class AuthDataClient extends AbstractDataClient
             }
 
         }
-        else 
+        else
         {
             try
             {
 
-             
-            	if(Constants.ERROR_TYPE_INVALID_STATE.equals( strError ) || Constants.ERROR_TYPE_RETRIEVING_AUTHORIZATION_CODE.equals( strError ) )
-            	{
-            		AppLogService.info( "Oauth 2 error  "+strError+  " redirect on default url" );
-            	}
-            	else
-            	{
-            		AppLogService.error( "Oauth 2 error  "+strError+  " redirect on default url" );
-            	}
-            	
-            	response.sendRedirect(AppPathService.getAbsoluteUrl( request, AppPathService.getRootForwardUrl()));
+                if ( Constants.ERROR_TYPE_INVALID_STATE.equals( strError ) || Constants.ERROR_TYPE_RETRIEVING_AUTHORIZATION_CODE.equals( strError ) )
+                {
+                    AppLogService.info( "Oauth 2 error  " + strError + " redirect on default url" );
+                }
+                else
+                {
+                    AppLogService.error( "Oauth 2 error  " + strError + " redirect on default url" );
+                }
+
+                response.sendRedirect( AppPathService.getAbsoluteUrl( request, AppPathService.getRootForwardUrl( ) ) );
             }
             catch( IOException e )
             {
@@ -178,8 +177,4 @@ public class AuthDataClient extends AbstractDataClient
         }
     }
 
-            
-                
-
-    
 }
