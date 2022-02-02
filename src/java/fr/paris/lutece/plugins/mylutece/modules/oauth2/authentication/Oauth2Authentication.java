@@ -35,16 +35,27 @@ package fr.paris.lutece.plugins.mylutece.modules.oauth2.authentication;
 
 import java.io.IOException;
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Locale;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import javax.security.auth.login.LoginException;
 import javax.servlet.http.HttpServletRequest;
 
 import fr.paris.lutece.plugins.mylutece.authentication.PortalAuthentication;
+import fr.paris.lutece.plugins.mylutece.business.LuteceUserAttributeDescription;
+import fr.paris.lutece.plugins.mylutece.business.LuteceUserRoleDescription;
+import fr.paris.lutece.plugins.mylutece.business.attribute.AttributeHome;
 import fr.paris.lutece.plugins.mylutece.modules.oauth2.service.Oauth2Service;
+import fr.paris.lutece.plugins.mylutece.service.MyLutecePlugin;
 import fr.paris.lutece.plugins.oauth2.business.Token;
 import fr.paris.lutece.plugins.oauth2.service.DataClientService;
 import fr.paris.lutece.plugins.oauth2.service.TokenService;
+import fr.paris.lutece.portal.business.role.RoleHome;
+import fr.paris.lutece.portal.service.plugin.Plugin;
+import fr.paris.lutece.portal.service.plugin.PluginService;
 import fr.paris.lutece.portal.service.security.LoginRedirectException;
 import fr.paris.lutece.portal.service.security.LuteceUser;
 import fr.paris.lutece.portal.service.security.SecurityService;
@@ -60,7 +71,7 @@ public class Oauth2Authentication extends PortalAuthentication implements Serial
     // Constants
     private static final String PROPERTY_AUTH_SERVICE_NAME = "mylutece-oauth2.service.name";
     private static final String CONSTANT_PATH_ICON = "images/local/skin/plugins/mylutece/modules/openid/mylutece-openid.png";
-    private static final String PLUGIN_NAME = "mylutece-openid";
+    private static final String PLUGIN_NAME = "mylutece-oauth2";
     private static final long serialVersionUID = 1L;
     private static final String authDataClientName = "authData";
 
@@ -213,5 +224,18 @@ public class Oauth2Authentication extends PortalAuthentication implements Serial
         }
 
         return user;
+    }
+    
+    
+    
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+   public List<LuteceUserAttributeDescription> getLuteceUserAttributesProvided(Locale locale)
+    {
+    	
+    	return Oauth2Service.getInstance().getLuteceUserAttributesProvided(locale);
     }
 }

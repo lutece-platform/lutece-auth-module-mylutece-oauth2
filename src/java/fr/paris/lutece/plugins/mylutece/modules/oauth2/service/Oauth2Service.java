@@ -37,6 +37,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Map.Entry;
 
@@ -46,6 +47,8 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 
+import fr.paris.lutece.plugins.mylutece.authentication.MultiLuteceAuthentication;
+import fr.paris.lutece.plugins.mylutece.business.LuteceUserAttributeDescription;
 import fr.paris.lutece.plugins.mylutece.modules.oauth2.authentication.Oauth2Authentication;
 import fr.paris.lutece.plugins.mylutece.modules.oauth2.authentication.Oauth2User;
 import fr.paris.lutece.plugins.mylutece.service.MyLuteceUserService;
@@ -53,6 +56,8 @@ import fr.paris.lutece.plugins.mylutece.web.MyLuteceApp;
 import fr.paris.lutece.plugins.oauth2.business.Token;
 import fr.paris.lutece.portal.service.security.LuteceUser;
 import fr.paris.lutece.portal.service.security.SecurityService;
+import fr.paris.lutece.portal.service.spring.SpringContextService;
+import fr.paris.lutece.portal.service.util.AppLogService;
 import fr.paris.lutece.portal.service.util.AppPropertiesService;
 import fr.paris.lutece.portal.web.PortalJspBean;
 
@@ -64,11 +69,14 @@ public final class Oauth2Service
 {
 
     /** The Constant _authService. */
-    private static final Oauth2Authentication _authService = new Oauth2Authentication( );
+    private static  Oauth2Authentication _authService ;
 
     /** The logger. */
     private static Logger _logger = Logger.getLogger( "lutece.oauth2" );
 
+    /** The Constant AUTHENTICATION_BEAN_NAME. */
+    private static final String AUTHENTICATION_BEAN_NAME = "mylutece-oauth2.authentication";
+    
     /** The Constant PROPERTY_USER_KEY_NAME. */
     private static final String PROPERTY_USER_KEY_NAME = "mylutece-oauth2.attributeKeyUsername";
 
@@ -206,6 +214,7 @@ public final class Oauth2Service
                 {
                     for ( String strUserInfo : ATTRIBUTE_USER_MAPPING.get( entry.getKey( ) ) )
                     {
+
                         Object val = entry.getValue( );
                         if ( val instanceof ArrayList<?> )
                         {
@@ -267,6 +276,54 @@ public final class Oauth2Service
 
         return user;
     }
+    
+    /**
+     * Inits the service
+     */
+    public void init()
+    {
+    	
+     	//register Authentication
+     	Oauth2Authentication _authService = SpringContextService.getBean( AUTHENTICATION_BEAN_NAME );
+
+         if ( _authService != null )
+         {
+             MultiLuteceAuthentication.registerAuthentication( _authService );
+         }
+         else
+         {
+             AppLogService.error( "Mylutece  Ouath2 Authentication not found, please check your mylutece-oauth2_context.xml configuration" );
+         }
+    	
+    }
+    
+    /**
+     * 
+     * @return the Lutece user Attribute provided by the authentication module
+     */
+    public List<LuteceUserAttributeDescription> getLuteceUserAttributesProvided(Locale locale)
+    {
+    	
+    	List<LuteceUserAttributeDescription> listUserDescription=  new ArrayList<LuteceUserAttributeDescription>();
+    
+    	
+    	String strUserMappingAttributes = AppPropertiesService.getProperty( PROPERTY_USER_MAPPING_ATTRIBUTES );
+        ATTRIBUTE_USER_MAPPING = new HashMap<String, List<String>>( );
+
+        if ( StringUtils.isNotBlank( strUserMappingAttributes ) )
+        {
+            String [ ] tabUserProperties = strUserMappingAttributes.split( SEPARATOR );
+            
+            for ( int i = 0; i < tabUserProperties.length; i++ )
+            {
+                 
+                  listUserDescription.add(new LuteceUserAttributeDescription( tabUserProperties [i],  AppPropertiesService.getProperty( CONSTANT_LUTECE_USER_PROPERTIES_PATH + "." + tabUserProperties [i] ) , ""));
+            }
+        }
+    	
+         	
+        return listUserDescription;
+    }
 
     /**
      * Process the logout.
@@ -304,5 +361,10 @@ public final class Oauth2Service
 
         response.sendRedirect( strNextURL );
     }
+    
+   
+    
+    
+    
 
 }
