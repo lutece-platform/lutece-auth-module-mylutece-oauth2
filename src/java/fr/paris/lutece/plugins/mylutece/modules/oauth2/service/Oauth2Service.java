@@ -284,7 +284,7 @@ public final class Oauth2Service
     {
     	
      	//register Authentication
-     	Oauth2Authentication _authService = SpringContextService.getBean( AUTHENTICATION_BEAN_NAME );
+     	 _authService = SpringContextService.getBean( AUTHENTICATION_BEAN_NAME );
 
          if ( _authService != null )
          {
