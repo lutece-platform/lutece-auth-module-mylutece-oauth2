@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?><plug-in>
     <name>mylutece-oauth2</name>
     <class>fr.paris.lutece.portal.service.plugin.PluginDefaultImplementation</class>
-    <version>2.0.10</version>
+    <version>2.0.11-SNAPSHOT</version>
     <description>module.mylutece.oauth2.module.description</description>
     <documentation/>
     <installation/>
