@@ -116,7 +116,7 @@ public class AuthDataClient extends AbstractDataClient
     {
 
         HttpSession session = request.getSession( true );
-        session.setAttribute( SESSION_ERROR_LOGIN, strError );
+      
 
         if ( AuthDataClient.ERROR_TYPE_LOGIN_REQUIRED.equals( strError ) )
         {
@@ -145,7 +145,8 @@ public class AuthDataClient extends AbstractDataClient
                     }
                     strLoginNextUrl += AuthDataClient.PARAM_ERROR_LOGIN + "=" + AuthDataClient.ERROR_TYPE_LOGIN_REQUIRED;
                 }
-
+                
+                session.setAttribute( SESSION_ERROR_LOGIN, strError );
                 response.sendRedirect( strLoginNextUrl );
             }
             catch( IOException e )
