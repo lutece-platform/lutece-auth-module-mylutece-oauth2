@@ -141,9 +141,9 @@ public class AuthDataClient extends AbstractDataClient
 
                     }
                     strLoginNextUrl += AuthDataClient.PARAM_ERROR_LOGIN + "=" + AuthDataClient.ERROR_TYPE_LOGIN_REQUIRED;
-                    session.setAttribute( SESSION_ERROR_LOGIN, strError );
-                }
                  
+                }
+                session.setAttribute( SESSION_ERROR_LOGIN, strError ); 
                 response.sendRedirect( strLoginNextUrl );
             }
             catch( IOException e )
