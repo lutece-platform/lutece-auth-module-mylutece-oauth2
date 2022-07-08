@@ -42,12 +42,10 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.DeserializationConfig;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import fr.paris.lutece.plugins.mylutece.modules.oauth2.service.Oauth2Service;
-import fr.paris.lutece.plugins.mylutece.web.MyLuteceApp;
 import fr.paris.lutece.plugins.oauth2.business.Token;
 import fr.paris.lutece.plugins.oauth2.dataclient.AbstractDataClient;
 import fr.paris.lutece.plugins.oauth2.web.Constants;
@@ -116,7 +114,6 @@ public class AuthDataClient extends AbstractDataClient
     {
 
         HttpSession session = request.getSession( true );
-        session.setAttribute( SESSION_ERROR_LOGIN, strError );
 
         if ( AuthDataClient.ERROR_TYPE_LOGIN_REQUIRED.equals( strError ) )
         {
@@ -144,6 +141,7 @@ public class AuthDataClient extends AbstractDataClient
 
                     }
                     strLoginNextUrl += AuthDataClient.PARAM_ERROR_LOGIN + "=" + AuthDataClient.ERROR_TYPE_LOGIN_REQUIRED;
+                    session.setAttribute( SESSION_ERROR_LOGIN, strError );
                 }
                  
                 response.sendRedirect( strLoginNextUrl );
