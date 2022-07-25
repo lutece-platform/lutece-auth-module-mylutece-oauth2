@@ -77,6 +77,8 @@ public class MyluteceOauth2Filter implements Filter
 
     public static final String SESSION_MYLUTECE_OAUTH2_FILTER_ENABLE = "enable";
     public static final String PARAM_PROMPT_NONE = "prompt=none";
+    public static final String PARAM_BACK_PROMPT_URL = "bck_prompt_url";
+        
 
     private static final String PROPERTY_USE_PROMPT_NONE = "mylutece-oauth2.usePromptNone";
     private static final String PROPERTY_USE_PROMPT_NONE_WHITE_LISTING_URLS = "mylutece-oauth2.usePromptNoneWhiteListingUrls";
@@ -128,7 +130,19 @@ public class MyluteceOauth2Filter implements Filter
                 {
                     session.setAttribute( AuthDataClient.SESSION_ERROR_LOGIN, "" );
                     String strRedirectLoginUrl = PortalJspBean.redirectLogin( request );
-                    resp.sendRedirect( strRedirectLoginUrl + "&" + "complementary_parameter=" + URLEncoder.encode( PARAM_PROMPT_NONE ) );
+                    String strNextUrl=PortalJspBean.getLoginNextUrl(request);
+                    String strContextPath=request.getContextPath();
+                    if(strContextPath!=null)
+                    {
+                    	strNextUrl=strNextUrl.substring(strContextPath.length()+1);
+                    	
+                    }
+                    strNextUrl=AppPathService.getAbsoluteUrl(request, strNextUrl);
+                    String strNextUrlEncoded=URLEncoder.encode( strNextUrl, "UTF-8" );
+                    
+                    resp.sendRedirect( strRedirectLoginUrl + "&" + "complementary_parameter=" + URLEncoder.encode( PARAM_PROMPT_NONE , "UTF-8" ) +"&" +PARAM_BACK_PROMPT_URL+"="+strNextUrlEncoded);
+                    
+                    
 
                     return;
                 }

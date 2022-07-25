@@ -41,13 +41,14 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import org.apache.commons.lang3.StringUtils;
+
 import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.DeserializationConfig;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import fr.paris.lutece.plugins.mylutece.modules.oauth2.service.Oauth2Service;
-import fr.paris.lutece.plugins.mylutece.web.MyLuteceApp;
+import fr.paris.lutece.plugins.mylutece.modules.oauth2.web.MyluteceOauth2Filter;
 import fr.paris.lutece.plugins.oauth2.business.Token;
 import fr.paris.lutece.plugins.oauth2.dataclient.AbstractDataClient;
 import fr.paris.lutece.plugins.oauth2.web.Constants;
@@ -126,7 +127,13 @@ public class AuthDataClient extends AbstractDataClient
 
                 String strLoginNextUrl = PortalJspBean.getLoginNextUrl( request );
                 // if the is not next url in session get default next Url
-                if ( strLoginNextUrl == null )
+               
+                if ( StringUtils.isEmpty(strLoginNextUrl)  )
+                {
+                	strLoginNextUrl=request.getParameter(MyluteceOauth2Filter.PARAM_BACK_PROMPT_URL);
+                }
+                
+                if ( StringUtils.isEmpty(strLoginNextUrl) )
                 {
                     strLoginNextUrl = AppPathService.getAbsoluteUrl( request, AppPathService.getRootForwardUrl( ) );
                 }
