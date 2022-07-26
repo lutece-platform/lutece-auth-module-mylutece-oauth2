@@ -131,13 +131,6 @@ public class MyluteceOauth2Filter implements Filter
                     session.setAttribute( AuthDataClient.SESSION_ERROR_LOGIN, "" );
                     String strRedirectLoginUrl = PortalJspBean.redirectLogin( request );
                     String strNextUrl=PortalJspBean.getLoginNextUrl(request);
-                    String strContextPath=request.getContextPath();
-                    if(strContextPath!=null)
-                    {
-                    	strNextUrl=strNextUrl.substring(strContextPath.length()+1);
-                    	
-                    }
-                    strNextUrl=AppPathService.getAbsoluteUrl(request, strNextUrl);
                     String strNextUrlEncoded=URLEncoder.encode( strNextUrl, "UTF-8" );
                     
                     resp.sendRedirect( strRedirectLoginUrl + "&" + "complementary_parameter=" + URLEncoder.encode( PARAM_PROMPT_NONE , "UTF-8" ) +"&" +PARAM_BACK_PROMPT_URL+"="+strNextUrlEncoded);
