@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document>
+    <properties>
+        <title>Module MyLutece pour FranceConnect</title>
+    </properties>
+    <body>
+        <section name="Module MyLutece pour FranceConnect">
+            <p>
+                <img src="images/franceconnect.png"/>
+            </p>
+            <subsection name="Introduction">
+                <p>
+                    Ce module s'appuie sur le <a href="https://github.com/lutece-platform/lutece-auth-plugin-franceconnect.git" target="_blank">plugin FranceConnect</a>
+                    pour réaliser une authentification MyLutece basée sur un fournisseur d'identités
+                    de la plate-forme FranceConnect.
+                </p>
+            </subsection>
+        </section>
+        
+        <section name="Installation">
+            
+            <subsection name="Configuration">
+                <p>
+                    Vérifier dans le fichier <code>WEB-INF/conf/plugins/mylutece.properties</code> que
+                    l'authentification est bien activée comme suit :
+                </p>
+   <p>                       
+       <div class="source">
+<pre>
+# Enable authentication
+mylutece.authentication.enable=true
+    
+mylutece.authentication.class=fr.paris.lutece.plugins.mylutece.modules.oauth2.authentication.FranceConnectAuthentication
+
+mylutece.url.login.page=Portal.jsp?page=franceconnect
+mylutece.url.doLogout=servlet/plugins/mylutece/modules/franceconnect/logout
+mylutece.url.default.redirect=../../Portal.jsp
+
+</pre>
+       </div>
+       </p>
+
+                </subsection>
+                
+            <subsection name="Usage">
+                <p>La page d'authentification FranceConnect s'appelle à partir de l'URL suivante :</p>
+                <p><code>http://myhost/lutece/jsp/site/Portal.jsp?page=franceconnect</code></p>
+                <p>
+                    Il est possible de réaliser ce formulaire d'authentification dans un portlet, soit en
+                    copiant le contenu du formulaire dans un portlet HTML, soit en modifiant la feuille
+                    de style XSL du portlet MyLutece.
+                </p>
+            </subsection>
+            <subsection name="Dépannage">
+                <p>
+                    <ul>
+                        <li>Vérifiez bien la configuration de MyLutece comme indiqué ci-dessus.</li>
+                        <li>
+                            Assurez-vous que le module FranceConnect est le seul module MyLutece présent dans la Webapp.
+                            Il ne doit pas y avoir d'autres fichiers <code>mylutece-xxxxx.properties</code> dans le
+                            répertoire <code>WEB-INF/conf/plugins/</code>.                          
+                        </li>
+                        <li>Vérifiez bien la configuration du plugin FranceConnect.</li>
+                        <li>
+                            L'activation des logs en mode debug se fait en ajoutant la ligne suivante dans le fichier
+                            <code>WEB-INF/conf/config.properties</code> dans la rubrique LOGGERS :
+                            <p>                       
+                            <div class="source">
+<pre>
+log4j.logger.lutece.franceconnect=DEBUG, Console
+</pre>
+                            </div>
+                            </p>
+                        </li>
+                    </ul>
+                </p>
+            </subsection>
+        </section>
+    </body>
+</document>
