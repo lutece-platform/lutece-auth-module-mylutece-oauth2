@@ -55,6 +55,7 @@ import fr.paris.lutece.plugins.oauth2.web.Constants;
 import fr.paris.lutece.portal.service.util.AppLogService;
 import fr.paris.lutece.portal.service.util.AppPathService;
 import fr.paris.lutece.portal.web.PortalJspBean;
+import fr.paris.lutece.util.http.SecurityUtil;
 
 /**
  * UserInfoDataClient
@@ -130,13 +131,28 @@ public class AuthDataClient extends AbstractDataClient
                
                 if ( StringUtils.isEmpty(strLoginNextUrl)  )
                 {
-                	strLoginNextUrl=request.getParameter(MyluteceOauth2Filter.PARAM_BACK_PROMPT_URL);
+                	
+                    strLoginNextUrl=request.getParameter(MyluteceOauth2Filter.PARAM_BACK_PROMPT_URL);
+                    //disable the possibility of open redirect
+                    if(!SecurityUtil.isInternalRedirectUrlSafe(strLoginNextUrl, request))
+                    {
+                    	
+                    	AppLogService.error("Oauth2 - open redirect url detected for {}",strLoginNextUrl);
+                    	strLoginNextUrl = AppPathService.getAbsoluteUrl( request, AppPathService.getRootForwardUrl( ) );
+                    }
+                    
+                    
                 }
+                
                 
                 if ( StringUtils.isEmpty(strLoginNextUrl) )
                 {
                     strLoginNextUrl = AppPathService.getAbsoluteUrl( request, AppPathService.getRootForwardUrl( ) );
                 }
+                
+                    
+               
+                
                 strLoginNextUrl = response.encodeRedirectURL( strLoginNextUrl );
                 // if SESSION_ERROR_LOGIN attribute is not store in session added this information in the redirect url
                 if ( strLoginNextUrl != null && session.getAttribute( AuthDataClient.SESSION_ERROR_LOGIN ) == null )
