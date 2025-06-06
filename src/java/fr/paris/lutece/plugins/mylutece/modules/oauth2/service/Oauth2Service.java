@@ -235,8 +235,7 @@ public final class Oauth2Service
                         }
                         else
                         {
-                            user.setUserInfo( strUserInfo, (String) val );
-
+                            user.setUserInfo( strUserInfo, val.toString( ) );
                         }
                     }
                 }
