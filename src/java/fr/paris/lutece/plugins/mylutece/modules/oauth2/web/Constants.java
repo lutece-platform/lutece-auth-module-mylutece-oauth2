@@ -51,12 +51,16 @@ public final class Constants
     public static final String PARAMETER_CLIENT_SECRET = "client_secret";
     public static final String PARAMETER_RESPONSE_TYPE = "response_type";
     public static final String PARAMETER_ACCESS_TOKEN = "access_token";
+    public static final String PARAMETER_POST_LOGOUT_REDIRECT_URI = "post_logout_redirect_uri";
+    public static final String OAUTH2_LOGOUT_SERVLET_PATH = "servlet/plugins/oauth2/logout";
     public static final String GRANT_TYPE_CODE = "authorization_code";
     public static final String STATE_SESSION_VARIABLE = "state";
     public static final String NONCE_SESSION_VARIABLE = "nonce";
+
     public static final String CLAIM_NONCE = "nonce";
     public static final String CLAIM_IDP = "idp";
     public static final String CLAIM_ACR = "acr";
+    public static final String PARAMETER_ID_TOKEN_HINT = "id_token_hint";
 
     /** Private constructor */
     private Constants( )

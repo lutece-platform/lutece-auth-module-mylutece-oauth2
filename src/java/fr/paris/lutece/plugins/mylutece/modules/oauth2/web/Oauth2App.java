@@ -33,13 +33,20 @@
  */
 package fr.paris.lutece.plugins.mylutece.modules.oauth2.web;
 
+import fr.paris.lutece.plugins.mylutece.modules.oauth2.authentication.Oauth2User;
 import fr.paris.lutece.plugins.mylutece.web.MyLuteceApp;
+import fr.paris.lutece.plugins.oauth2.business.Token;
+import fr.paris.lutece.plugins.oauth2.service.TokenService;
 import fr.paris.lutece.portal.service.security.LuteceUser;
 import fr.paris.lutece.portal.service.security.SecurityService;
+import fr.paris.lutece.portal.service.util.AppPathService;
+import fr.paris.lutece.portal.service.util.AppPropertiesService;
+import fr.paris.lutece.portal.util.mvc.commons.annotations.Action;
 import fr.paris.lutece.portal.util.mvc.commons.annotations.View;
 import fr.paris.lutece.portal.util.mvc.xpage.MVCApplication;
 import fr.paris.lutece.portal.util.mvc.xpage.annotations.Controller;
 import fr.paris.lutece.portal.web.xpages.XPage;
+import fr.paris.lutece.util.url.UrlItem;
 
 import java.util.Map;
 
@@ -62,6 +69,8 @@ public class Oauth2App extends MVCApplication
     private static final String MARK_URL_DOLOGIN = "url_dologin";
     private static final String MARK_URL_DOLOGOUT = "url_dologout";
     private static final long serialVersionUID = 1L;
+
+    private static final String ACTION_DO_LOGOUT = "dologout";
 
     /**
      * Build the Login page
@@ -90,4 +99,34 @@ public class Oauth2App extends MVCApplication
 
         return getXPage( TEMPLATE_LOGIN_PAGE, request.getLocale( ), model );
     }
+    /**
+     * Logout action
+     * 
+     * @param request
+     *            The HTTP request
+     * @return The XPage object containing the page content
+     */
+    @Action( ACTION_DO_LOGOUT )
+    public XPage doLogout( HttpServletRequest request )
+    {
+        LuteceUser user = SecurityService.getInstance( ).getRegisteredUser( request );
+        String strIdTokenInt=null;
+        if(user!=null && user instanceof Oauth2User)
+        {
+               Oauth2User oauth2User = (Oauth2User) user;
+               strIdTokenInt=oauth2User.getToken().getIdTokenString();
+               //logout user
+               SecurityService.getInstance( ).logoutUser( request );
+        }
+        //redirect to the logout servlet
+        UrlItem url = new UrlItem( Constants.OAUTH2_LOGOUT_SERVLET_PATH );
+        if(strIdTokenInt!=null)
+        {
+           url.addParameter( Constants.PARAMETER_ID_TOKEN_HINT, strIdTokenInt );
+        }
+
+        return redirect( request,AppPathService.getAbsoluteUrl(request, url.getUrl()));
+    }
+
+
 }
