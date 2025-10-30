@@ -35,10 +35,10 @@ package fr.paris.lutece.plugins.mylutece.modules.oauth2.listener;
 
 import java.util.EnumSet;
 
-import javax.servlet.ServletContextEvent;
-import javax.servlet.ServletContextListener;
-import javax.servlet.SessionTrackingMode;
-import javax.servlet.annotation.WebListener;
+import jakarta.servlet.ServletContextEvent;
+import jakarta.servlet.ServletContextListener;
+import jakarta.servlet.SessionTrackingMode;
+import jakarta.servlet.annotation.WebListener;
 
 /**
  * 

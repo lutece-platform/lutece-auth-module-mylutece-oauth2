@@ -50,11 +50,16 @@ import fr.paris.lutece.util.url.UrlItem;
 
 import java.util.Map;
 
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
+
+import jakarta.enterprise.context.RequestScoped;
+import jakarta.inject.Named;
 
 /**
  * France Connect XPage Application
  */
+@RequestScoped
+@Named( "mylutece-oauth2.xpage.Oauth2" )
 @Controller( xpageName = "Oauth2", pagePathI18nKey = "module.mylutece.oauth2.loginPagePath", pageTitleI18nKey = "module.mylutece.oauth2.loginPageTitle" )
 public class Oauth2App extends MVCApplication
 {

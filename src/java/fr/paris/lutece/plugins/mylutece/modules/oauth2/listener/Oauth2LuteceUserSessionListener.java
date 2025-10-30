@@ -33,16 +33,26 @@
  */
 package fr.paris.lutece.plugins.mylutece.modules.oauth2.listener;
 
-import javax.servlet.http.HttpSessionEvent;
-import javax.servlet.http.HttpSessionListener;
+import jakarta.servlet.annotation.WebListener;
+import jakarta.servlet.http.HttpSessionEvent;
+import jakarta.servlet.http.HttpSessionListener;
 
-import fr.paris.lutece.plugins.mylutece.modules.oauth2.service.Oauth2LuteceUserSessionService;
+import jakarta.enterprise.inject.spi.CDI;
+import jakarta.inject.Inject;
+import fr.paris.lutece.plugins.mylutece.modules.oauth2.service.IOauth2LuteceUserSessionService;
 
 /**
  * Oauth2LuteceUserSessionListener
  */
+
+ @WebListener
 public final class Oauth2LuteceUserSessionListener implements HttpSessionListener
 {
+
+    @Inject
+    IOauth2LuteceUserSessionService _oauth2LuteceUserSessionService;
+
+
     /**
      * {@inheritDoc}
      */
@@ -57,6 +67,6 @@ public final class Oauth2LuteceUserSessionListener implements HttpSessionListene
     @Override
     public void sessionDestroyed( HttpSessionEvent sessionEvent )
     {
-        Oauth2LuteceUserSessionService.getInstance( ).removeLuteceUserSession( sessionEvent.getSession( ).getId( ) );
+        _oauth2LuteceUserSessionService.removeLuteceUserSession( sessionEvent.getSession( ).getId( ) );
     }
 }

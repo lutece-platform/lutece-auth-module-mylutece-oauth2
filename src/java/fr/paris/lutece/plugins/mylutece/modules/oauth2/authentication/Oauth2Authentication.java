@@ -35,27 +35,23 @@ package fr.paris.lutece.plugins.mylutece.modules.oauth2.authentication;
 
 import java.io.IOException;
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 import javax.security.auth.login.LoginException;
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
+
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.inject.Inject;
+import jakarta.inject.Named;
 
 import fr.paris.lutece.plugins.mylutece.authentication.PortalAuthentication;
 import fr.paris.lutece.plugins.mylutece.business.LuteceUserAttributeDescription;
-import fr.paris.lutece.plugins.mylutece.business.LuteceUserRoleDescription;
-import fr.paris.lutece.plugins.mylutece.business.attribute.AttributeHome;
 import fr.paris.lutece.plugins.mylutece.modules.oauth2.service.Oauth2Service;
-import fr.paris.lutece.plugins.mylutece.service.MyLutecePlugin;
 import fr.paris.lutece.plugins.oauth2.business.Token;
 import fr.paris.lutece.plugins.oauth2.service.DataClientService;
 import fr.paris.lutece.plugins.oauth2.service.TokenService;
-import fr.paris.lutece.portal.business.role.RoleHome;
-import fr.paris.lutece.portal.service.plugin.Plugin;
-import fr.paris.lutece.portal.service.plugin.PluginService;
 import fr.paris.lutece.portal.service.security.LoginRedirectException;
 import fr.paris.lutece.portal.service.security.LuteceUser;
 import fr.paris.lutece.portal.service.security.SecurityService;
@@ -65,6 +61,8 @@ import fr.paris.lutece.portal.service.util.AppPropertiesService;
 /**
  * The Class provides an implementation of the inherited abstract class PortalAuthentication based on OpenID
  */
+@ApplicationScoped
+@Named( "mylutece-oauth2.authentication" )
 public class Oauth2Authentication extends PortalAuthentication implements Serializable
 {
     ////////////////////////////////////////////////////////////////////////////////////////////////
@@ -74,6 +72,9 @@ public class Oauth2Authentication extends PortalAuthentication implements Serial
     private static final String PLUGIN_NAME = "mylutece-oauth2";
     private static final long serialVersionUID = 1L;
     private static final String authDataClientName = "authData";
+    
+    @Inject
+    private Oauth2Service _oauth2Service;
 
     /**
      * Gets the Authentification service name
@@ -207,7 +208,7 @@ public class Oauth2Authentication extends PortalAuthentication implements Serial
                 try
                 {
                     Map<String, Object> mapUserInfo = authDataClient.parse( authDataClient.getData( token ) );
-                    return Oauth2Service.getInstance( ).processAuthentication( request, mapUserInfo, token );
+                    return _oauth2Service.processAuthentication( request, mapUserInfo, token );
 
                 }
                 catch( IOException e )
@@ -236,6 +237,6 @@ public class Oauth2Authentication extends PortalAuthentication implements Serial
    public List<LuteceUserAttributeDescription> getLuteceUserAttributesProvided(Locale locale)
     {
     	
-    	return Oauth2Service.getInstance().getLuteceUserAttributesProvided(locale);
+    	return _oauth2Service.getLuteceUserAttributesProvided(locale);
     }
 }

@@ -40,12 +40,20 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Optional;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.inject.Inject;
+import jakarta.inject.Named;
+import jakarta.annotation.PostConstruct;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.eclipse.microprofile.config.inject.ConfigProperty;
 
 import fr.paris.lutece.plugins.mylutece.authentication.MultiLuteceAuthentication;
 import fr.paris.lutece.plugins.mylutece.business.LuteceUserAttributeDescription;
@@ -56,7 +64,6 @@ import fr.paris.lutece.plugins.mylutece.web.MyLuteceApp;
 import fr.paris.lutece.plugins.oauth2.business.Token;
 import fr.paris.lutece.portal.service.security.LuteceUser;
 import fr.paris.lutece.portal.service.security.SecurityService;
-import fr.paris.lutece.portal.service.spring.SpringContextService;
 import fr.paris.lutece.portal.service.util.AppLogService;
 import fr.paris.lutece.portal.service.util.AppPropertiesService;
 import fr.paris.lutece.portal.web.PortalJspBean;
@@ -65,17 +72,31 @@ import fr.paris.lutece.portal.web.PortalJspBean;
 /**
  * France Connect Service.
  */
-public final class Oauth2Service
+@ApplicationScoped
+public class Oauth2Service
 {
+    /** The Constant LOGGER_NAME. */
+    private static final String LOGGER_NAME = "lutece.oauth2";
+    
+    /** The logger. */
+    private static final Logger _logger = LogManager.getLogger( LOGGER_NAME );
+    
+    /**
+     * Default constructor for CDI
+     */
+    public Oauth2Service( )
+    {
+        // Default constructor
+    }
 
     /** The Constant _authService. */
-    private static  Oauth2Authentication _authService ;
-
-    /** The logger. */
-    private static Logger _logger = Logger.getLogger( "lutece.oauth2" );
-
-    /** The Constant AUTHENTICATION_BEAN_NAME. */
-    private static final String AUTHENTICATION_BEAN_NAME = "mylutece-oauth2.authentication";
+    @Inject
+    @Named( "mylutece-oauth2.authentication" )
+    private Oauth2Authentication _authService;
+    
+    @Inject
+    @Named( "mylutece-oauth2.oauth2LuteceUserSessionService" )
+    private IOauth2LuteceUserSessionService _luteceUserSessionService;
     
     /** The Constant PROPERTY_USER_KEY_NAME. */
     private static final String PROPERTY_USER_KEY_NAME = "mylutece-oauth2.attributeKeyUsername";
@@ -92,6 +113,14 @@ public final class Oauth2Service
     /** The Constant CONSTANT_LUTECE_USER_PROPERTIES_PATH. */
     private static final String CONSTANT_LUTECE_USER_PROPERTIES_PATH = "mylutece-oauth2.attribute";
 
+
+    @ConfigProperty(name = PROPERTY_USER_KEY_NAME)
+    private  Optional<String> _strTabUserKey;
+
+    @ConfigProperty(name = PROPERTY_USER_MAPPING_ATTRIBUTES)
+    private Optional<String> _strTabUserMappingAttributes;
+
+
     /** The attribute user mapping. */
     private static Map<String, List<String>> ATTRIBUTE_USER_MAPPING;
 
@@ -101,78 +130,69 @@ public final class Oauth2Service
     /** The Constant SEPARATOR. */
     private static final String SEPARATOR = ",";
 
-    /** The singleton. */
-    private static Oauth2Service _singleton;
-
     /**
-     * private constructor.
+     * Initialization method called after construction.
      */
-    private Oauth2Service( )
+    @PostConstruct
+    public void init( )
     {
-    }
+     
+        if ( _strTabUserKey.isPresent( ) && StringUtils.isNotBlank( _strTabUserKey.get( ) ) )
+        {
+            ATTRIBUTE_USER_KEY_NAME = _strTabUserKey.get( ).split( SEPARATOR );
+        }
 
-    /**
-     * Gets the instance.
-     *
-     * @return the instance
-     */
-    public static Oauth2Service getInstance( )
-    {
-        if ( _singleton == null )
+        if ( _strTabUserMappingAttributes.isPresent( ) && StringUtils.isNotBlank( _strTabUserMappingAttributes.get( ) ) )
         {
 
-            _singleton = new Oauth2Service( );
-            String strTabUserKey = AppPropertiesService.getProperty( PROPERTY_USER_KEY_NAME );
-            if ( StringUtils.isNotBlank( strTabUserKey ) )
-            {
-                ATTRIBUTE_USER_KEY_NAME = strTabUserKey.split( SEPARATOR );
-            }
-            String strUserMappingAttributes = AppPropertiesService.getProperty( PROPERTY_USER_MAPPING_ATTRIBUTES );
-            ATTRIBUTE_USER_MAPPING = new HashMap<String, List<String>>( );
+            String [ ] tabUserProperties = _strTabUserMappingAttributes.get( ).split( SEPARATOR );
+            String [ ] tabPropertiesValues;
+            String userProperties;
 
-            if ( StringUtils.isNotBlank( strUserMappingAttributes ) )
+            for ( int i = 0; i < tabUserProperties.length; i++ )
             {
-                String [ ] tabUserProperties = strUserMappingAttributes.split( SEPARATOR );
-                String [ ] tabPropertiesValues;
-                String userProperties;
+                userProperties = AppPropertiesService.getProperty( CONSTANT_LUTECE_USER_PROPERTIES_PATH + "." + tabUserProperties [i] );
 
-                for ( int i = 0; i < tabUserProperties.length; i++ )
+                if ( StringUtils.isNotBlank( userProperties ) )
                 {
-                    userProperties = AppPropertiesService.getProperty( CONSTANT_LUTECE_USER_PROPERTIES_PATH + "." + tabUserProperties [i] );
 
-                    if ( StringUtils.isNotBlank( userProperties ) )
+                    if ( userProperties.contains( SEPARATOR ) )
                     {
+                        tabPropertiesValues = userProperties.split( SEPARATOR );
 
-                        if ( userProperties.contains( SEPARATOR ) )
+                        for ( int n = 0; n < tabPropertiesValues.length; n++ )
                         {
-                            tabPropertiesValues = userProperties.split( SEPARATOR );
-
-                            for ( int n = 0; i < tabPropertiesValues.length; n++ )
+                            if ( !ATTRIBUTE_USER_MAPPING.containsKey( tabPropertiesValues [n] ) )
                             {
-                                if ( !ATTRIBUTE_USER_MAPPING.containsKey( tabPropertiesValues [n] ) )
-                                {
-                                    ATTRIBUTE_USER_MAPPING.put( tabPropertiesValues [n], new ArrayList<String>( ) );
-                                }
-                                ATTRIBUTE_USER_MAPPING.get( tabPropertiesValues [n] ).add( tabUserProperties [i] );
+                                ATTRIBUTE_USER_MAPPING.put( tabPropertiesValues [n], new ArrayList<String>( ) );
                             }
-
-                        }
-                        else
-                        {
-
-                            if ( !ATTRIBUTE_USER_MAPPING.containsKey( userProperties ) )
-                            {
-                                ATTRIBUTE_USER_MAPPING.put( userProperties, new ArrayList<String>( ) );
-                            }
-                            ATTRIBUTE_USER_MAPPING.get( userProperties ).add( tabUserProperties [i] );
+                            ATTRIBUTE_USER_MAPPING.get( tabPropertiesValues [n] ).add( tabUserProperties [i] );
                         }
 
                     }
+                    else
+                    {
+
+                        if ( !ATTRIBUTE_USER_MAPPING.containsKey( userProperties ) )
+                        {
+                            ATTRIBUTE_USER_MAPPING.put( userProperties, new ArrayList<String>( ) );
+                        }
+                        ATTRIBUTE_USER_MAPPING.get( userProperties ).add( tabUserProperties [i] );
+                    }
+
                 }
             }
         }
-
-        return _singleton;
+        
+        // Register Authentication
+        if ( _authService != null )
+        {
+            MultiLuteceAuthentication.registerAuthentication( _authService );
+        }
+        else
+        {
+            AppLogService.error( "Mylutece OAuth2 Authentication not found, please check your configuration" );
+        }
     }
 
     /**
@@ -216,21 +236,21 @@ public final class Oauth2Service
                     {
 
                         Object val = entry.getValue( );
-                        if ( val instanceof ArrayList<?> )
+                        if ( val instanceof java.util.List )
                         {
 
                             StringBuffer strBufVal = new StringBuffer( );
-                            for ( String tabVal : (ArrayList<String>) val )
+                            @SuppressWarnings("unchecked")
+                            java.util.List<Object> listValues = (java.util.List<Object>) val;
+                            for ( Object tabVal : listValues )
                             {
-                                strBufVal.append( tabVal );
+                                strBufVal.append( tabVal.toString( ) );
                                 strBufVal.append( SEPARATOR );
                             }
                             if ( strBufVal.length( ) > 0 )
                             {
                                 user.setUserInfo( strUserInfo, strBufVal.substring( 0, strBufVal.length( ) - 1 ) );
                             }
-
-                            user.setUserInfo( strUserInfo, strBufVal.toString( ) );
 
                         }
                         else
@@ -267,33 +287,13 @@ public final class Oauth2Service
             MyLuteceUserService.provideUserExternalInfos( user );
 
             // add Oauth2LuteceUserSessionService session
-            Oauth2LuteceUserSessionService.getInstance( ).addLuteceUserSession( user.getName( ), request.getSession( true ).getId( ) );
+            _luteceUserSessionService.addLuteceUserSession( user.getName( ), request.getSession( true ).getId( ) );
 
         }
 
         SecurityService.getInstance( ).registerUser( request, user );
 
         return user;
-    }
-    
-    /**
-     * Inits the service
-     */
-    public void init()
-    {
-    	
-     	//register Authentication
-     	 _authService = SpringContextService.getBean( AUTHENTICATION_BEAN_NAME );
-
-         if ( _authService != null )
-         {
-             MultiLuteceAuthentication.registerAuthentication( _authService );
-         }
-         else
-         {
-             AppLogService.error( "Mylutece  Ouath2 Authentication not found, please check your mylutece-oauth2_context.xml configuration" );
-         }
-    	
     }
     
     /**
@@ -346,10 +346,10 @@ public final class Oauth2Service
      * @throws IOException
      *             if an error occurs
      */
-    public static void redirect( HttpServletRequest request, HttpServletResponse response ) throws IOException
+    public  void redirect( HttpServletRequest request, HttpServletResponse response ) throws IOException
     {
         String strNextURL = PortalJspBean.getLoginNextUrl( request );
-        _logger.info( "Next URL : " + strNextURL );
+        _logger.info( "Next URL : {}", strNextURL );
 
         if ( strNextURL == null )
         {

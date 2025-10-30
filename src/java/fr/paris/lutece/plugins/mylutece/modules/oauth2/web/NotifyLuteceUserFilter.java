@@ -35,23 +35,27 @@ package fr.paris.lutece.plugins.mylutece.modules.oauth2.web;
 
 import java.io.IOException;
 
-import javax.servlet.Filter;
-import javax.servlet.FilterChain;
-import javax.servlet.FilterConfig;
-import javax.servlet.ServletException;
-import javax.servlet.ServletRequest;
-import javax.servlet.ServletResponse;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import jakarta.servlet.Filter;
+import jakarta.servlet.FilterChain;
+import jakarta.servlet.FilterConfig;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.ServletRequest;
+import jakarta.servlet.ServletResponse;
+import jakarta.servlet.annotation.WebFilter;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+
+import jakarta.enterprise.inject.spi.CDI;
 
 import org.apache.commons.lang3.StringUtils;
 
-import fr.paris.lutece.plugins.mylutece.modules.oauth2.service.Oauth2LuteceUserSessionService;
+import fr.paris.lutece.plugins.mylutece.modules.oauth2.service.IOauth2LuteceUserSessionService;
 
 /**
  * ParisConnectLuteceFilters
  *
  */
+@WebFilter(filterName = "Oauth 2 Notify Lutece User", urlPatterns = "/plugins/myluteceoauth2/notifyLuteceUser")
 public class NotifyLuteceUserFilter implements Filter
 {
     private final static String PARAMETER_UID = "uid";
@@ -80,7 +84,8 @@ public class NotifyLuteceUserFilter implements Filter
 
         if ( !StringUtils.isEmpty( strGuidParameter ) )
         {
-            Oauth2LuteceUserSessionService.getInstance( ).notifyLuteceUserUpdating( strGuidParameter );
+            IOauth2LuteceUserSessionService service = CDI.current( ).select( IOauth2LuteceUserSessionService.class ).get( );
+            service.notifyLuteceUserUpdating( strGuidParameter );
         }
 
         response.setStatus( HttpServletResponse.SC_OK );

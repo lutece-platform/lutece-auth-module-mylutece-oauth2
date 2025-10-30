@@ -40,19 +40,26 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
-import javax.servlet.Filter;
-import javax.servlet.FilterChain;
-import javax.servlet.FilterConfig;
-import javax.servlet.ServletException;
-import javax.servlet.ServletRequest;
-import javax.servlet.ServletResponse;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
+import jakarta.annotation.PostConstruct;
+import jakarta.inject.Inject;
+import jakarta.inject.Named;
+import jakarta.servlet.Filter;
+import jakarta.servlet.FilterChain;
+import jakarta.servlet.FilterConfig;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.ServletRequest;
+import jakarta.servlet.ServletResponse;
+import jakarta.servlet.annotation.WebFilter;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
 
 import org.apache.commons.collections.map.HashedMap;
 import org.apache.commons.lang3.StringUtils;
+import org.eclipse.microprofile.config.inject.ConfigProperty;
+import org.jboss.logging.annotations.Pos;
 
 import fr.paris.lutece.plugins.mylutece.modules.oauth2.authentication.AuthDataClient;
 import fr.paris.lutece.plugins.mylutece.modules.oauth2.authentication.Oauth2Authentication;
@@ -62,7 +69,6 @@ import fr.paris.lutece.plugins.oauth2.business.Token;
 import fr.paris.lutece.plugins.oauth2.service.TokenService;
 import fr.paris.lutece.portal.service.security.LuteceUser;
 import fr.paris.lutece.portal.service.security.SecurityService;
-import fr.paris.lutece.portal.service.spring.SpringContextService;
 import fr.paris.lutece.portal.service.util.AppPathService;
 import fr.paris.lutece.portal.service.util.AppPropertiesService;
 import fr.paris.lutece.portal.web.PortalJspBean;
@@ -72,6 +78,7 @@ import fr.paris.lutece.util.url.UrlItem;
  * ParisConnectLuteceFilters
  *
  */
+@WebFilter(filterName = "Mylutece Oauth2 Filter", urlPatterns = "/jsp/site/*")
 public class MyluteceOauth2Filter implements Filter
 {
 
@@ -91,10 +98,27 @@ public class MyluteceOauth2Filter implements Filter
     private static final String URL_STAR = "*";
     private static final String SEPARATOR = ",";
 
+
+    @ConfigProperty( name = PROPERTY_USE_PROMPT_NONE ,defaultValue = "false" )
     private boolean _bUsePromptNone;
+    @ConfigProperty( name = PROPERTY_VALIDATE_REFRESH_TOKEN  ,defaultValue = "true" )
     private boolean _bValidateRefreshToken;
+
+    @ConfigProperty(name = PROPERTY_USE_PROMPT_NONE_WHITE_LISTING_URLS)
+    Optional<String> _strTabWhiteListingUrls;
+    @ConfigProperty(name = PROPERTY_USE_PROMPT_NONE_WHITE_LISTING_HEADERS)
+    Optional<String> _strTabWhiteListingHeaders;
+
     private List<String> _listUsePromptWhiteUrls;
     private Map<String, List<String>> _mapUsePromptWhiteHeaders;
+    @Inject
+    @Named("mylutece-oauth2.authentication")
+    Oauth2Authentication _oauth2Authentication;
+    @Inject
+    TokenService _tokenService ;
+    @Inject
+    Oauth2LuteceUserSessionService _oauth2LuteceUserSessionService;
+  
 
     /**
      *
@@ -148,7 +172,7 @@ public class MyluteceOauth2Filter implements Filter
                     Oauth2User oauth2User = (Oauth2User) user;
                     if ( oauth2User.getToken( ) != null && oauth2User.getToken( ).getRefreshToken( ) != null )
                     {
-                        Token token = TokenService.getService( ).getTokenByRefreshToken( oauth2User.getToken( ).getRefreshToken( ) );
+                        Token token = _tokenService.getTokenByRefreshToken( oauth2User.getToken( ).getRefreshToken( ) );
                         if ( token == null )
                         {
 
@@ -164,11 +188,11 @@ public class MyluteceOauth2Filter implements Filter
                         SecurityService.getInstance( ).logoutUser( request );
                     }
                 }
-            if ( !Oauth2LuteceUserSessionService.getInstance( ).isLuteceUserUpToDate( request.getSession( true ).getId( ) ) )
+            if ( !_oauth2LuteceUserSessionService.isLuteceUserUpToDate( request.getSession( true ).getId( ) ) )
             {
 
-                Oauth2Authentication oauth2Authentication = (Oauth2Authentication) SpringContextService.getBean( "mylutece-oauth2.authentication" );
-                user = oauth2Authentication.getHttpAuthenticatedUser( request );
+
+                user = _oauth2Authentication.getHttpAuthenticatedUser( request );
 
                 if ( user != null )
                 {
@@ -189,20 +213,29 @@ public class MyluteceOauth2Filter implements Filter
     @Override
     public void init( FilterConfig config ) throws ServletException
     {
-        _bUsePromptNone = AppPropertiesService.getPropertyBoolean( PROPERTY_USE_PROMPT_NONE, false );
-        _bValidateRefreshToken = AppPropertiesService.getPropertyBoolean( PROPERTY_VALIDATE_REFRESH_TOKEN, false );
 
-        String strTabWhiteListingUrls = AppPropertiesService.getProperty( PROPERTY_USE_PROMPT_NONE_WHITE_LISTING_URLS );
-        String strTabWhiteListingHeaders = AppPropertiesService.getProperty( PROPERTY_USE_PROMPT_NONE_WHITE_LISTING_HEADERS );
-        if ( StringUtils.isNotBlank( strTabWhiteListingUrls ) )
+    }
+
+    @PostConstruct
+    private void init( )
+    {
+        if ( _strTabWhiteListingUrls.isPresent( ) )
         {
-            _listUsePromptWhiteUrls = Arrays.asList( strTabWhiteListingUrls.split( SEPARATOR ) );
+            String strTabWhiteListingUrls = _strTabWhiteListingUrls.get( );
+            if ( StringUtils.isNotBlank( strTabWhiteListingUrls ) )
+            {
+                _listUsePromptWhiteUrls = Arrays.asList( strTabWhiteListingUrls.split( SEPARATOR ) );
+            }
         }
-        if ( StringUtils.isNotBlank( strTabWhiteListingHeaders ) )
+        if ( _strTabWhiteListingHeaders.isPresent( ) )
         {
-            _mapUsePromptWhiteHeaders = new HashMap<String, List<String>>( );
-            Arrays.asList( strTabWhiteListingHeaders.split( SEPARATOR ) ).stream( ).forEach( x -> _mapUsePromptWhiteHeaders.put( x,
-                    Arrays.asList( AppPropertiesService.getProperty( PROPERTY_USE_PROMPT_NONE_WHITE_LISTING_HEADERS + "." + x, "" ).split( SEPARATOR ) ) ) );
+            String strTabWhiteListingHeaders = _strTabWhiteListingHeaders.get( );
+            if ( StringUtils.isNotBlank( strTabWhiteListingHeaders ) )
+            {
+                _mapUsePromptWhiteHeaders = new HashMap<String, List<String>>( );
+                Arrays.asList( strTabWhiteListingHeaders.split( SEPARATOR ) ).stream( ).forEach( x -> _mapUsePromptWhiteHeaders.put( x,
+                        Arrays.asList( AppPropertiesService.getProperty( PROPERTY_USE_PROMPT_NONE_WHITE_LISTING_HEADERS + "." + x, "" ).split( SEPARATOR ) ) ) );
+            }
         }
 
     }

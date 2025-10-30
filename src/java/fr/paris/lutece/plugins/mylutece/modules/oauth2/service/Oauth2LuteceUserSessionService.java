@@ -33,30 +33,27 @@
  */
 package fr.paris.lutece.plugins.mylutece.modules.oauth2.service;
 
-import fr.paris.lutece.portal.service.spring.SpringContextService;
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.inject.Named;
 
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
+@ApplicationScoped
+@Named( "mylutece-oauth2.oauth2LuteceUserSessionService" )
 public class Oauth2LuteceUserSessionService implements IOauth2LuteceUserSessionService
 {
-    private static final String BEAN_LUTECE_USER_SESSION_SERVICE = "mylutece-oauth2.oauth2LuteceUserSessionService";
-    private static IOauth2LuteceUserSessionService _singleton;
-    private static Map<String, Oauth2LuteceUserSession> _hashSession;
-    private static Map<String, Set<String>> _hashLuteceUserName;
+    private static Map<String, Oauth2LuteceUserSession> _hashSession = new HashMap<>( );
+    private static Map<String, Set<String>> _hashLuteceUserName = new HashMap<>( );
 
-    public static IOauth2LuteceUserSessionService getInstance( )
+    /**
+     * Default constructor for CDI
+     */
+    public Oauth2LuteceUserSessionService( )
     {
-        if ( _singleton == null )
-        {
-            _singleton = SpringContextService.getBean( BEAN_LUTECE_USER_SESSION_SERVICE );
-            _hashSession = new HashMap<String, Oauth2LuteceUserSession>( );
-            _hashLuteceUserName = new HashMap<String, Set<String>>( );
-        }
-
-        return _singleton;
+        // Default constructor
     }
 
     public boolean isLuteceUserUpToDate( String strSession )

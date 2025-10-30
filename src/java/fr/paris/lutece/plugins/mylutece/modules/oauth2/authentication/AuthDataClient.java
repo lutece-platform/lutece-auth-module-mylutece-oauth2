@@ -37,9 +37,11 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
+
+import jakarta.inject.Inject;
 
 import org.apache.commons.lang3.StringUtils;
 
@@ -69,12 +71,18 @@ public class AuthDataClient extends AbstractDataClient
     public static final String PARAM_ERROR_LOGIN = "error_login";
     public static final String PARAM_NEXT_URL = "next_url";
     private static ObjectMapper _mapper;
+    private Oauth2Service _Oauth2Service;
 
     static
     {
         _mapper = new ObjectMapper( );
         _mapper.disable( DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES );
     }
+
+  public AuthDataClient( Oauth2Service oauth2Service )
+  {
+      _Oauth2Service = oauth2Service;
+  }
 
     /**
      * {@inheritDoc }
@@ -85,8 +93,8 @@ public class AuthDataClient extends AbstractDataClient
         try
         {
             Map<String, Object> mapUserInfo = parse( getData( token ) );
-            Oauth2Service.getInstance( ).processAuthentication( request, mapUserInfo, token );
-            Oauth2Service.redirect( request, response );
+            _Oauth2Service.processAuthentication( request, mapUserInfo, token );
+            _Oauth2Service.redirect( request, response );
 
         }
         catch( IOException ex )
@@ -185,11 +193,11 @@ public class AuthDataClient extends AbstractDataClient
 
                 if ( Constants.ERROR_TYPE_INVALID_STATE.equals( strError ) || Constants.ERROR_TYPE_RETRIEVING_AUTHORIZATION_CODE.equals( strError ) )
                 {
-                    AppLogService.info( "Oauth 2 error  " + strError + " redirect on default url" );
+                    AppLogService.info( "Oauth 2 error {} redirect on default url", strError );
                 }
                 else
                 {
-                    AppLogService.error( "Oauth 2 error  " + strError + " redirect on default url" );
+                    AppLogService.error( "Oauth 2 error {} redirect on default url", strError );
                 }
 
                 response.sendRedirect( AppPathService.getAbsoluteUrl( request, AppPathService.getRootForwardUrl( ) ) );

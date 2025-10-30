@@ -12,9 +12,10 @@
        
        
        
-  <bean id="mylutece-oauth2.oauth2LuteceUserSessionService" class="fr.paris.lutece.plugins.mylutece.modules.oauth2.service.Oauth2LuteceUserSessionService"/>
-  <bean id="mylutece-oauth2.authentication" class="fr.paris.lutece.plugins.mylutece.modules.oauth2.authentication.Oauth2Authentication"/>
-  <bean id="mylutece-oauth2.authDataClient" class="fr.paris.lutece.plugins.mylutece.modules.oauth2.authentication.AuthDataClient">
+  <!-- Beans migrated to CDI -->
+  <!-- <bean id="mylutece-oauth2.oauth2LuteceUserSessionService" class="fr.paris.lutece.plugins.mylutece.modules.oauth2.service.Oauth2LuteceUserSessionService"/> -->
+  <!-- <bean id="mylutece-oauth2.authentication" class="fr.paris.lutece.plugins.mylutece.modules.oauth2.authentication.Oauth2Authentication"/> -->
+  <!-- <bean id="mylutece-oauth2.authDataClient" class="fr.paris.lutece.plugins.mylutece.modules.oauth2.authentication.AuthDataClient">
         <property name="name" value="authData" />
         <property name="default" value="true"/>
         <property name="dataServerUri" value="https://fcp.integ01.dev-franceconnect.fr/api/v1/userinfo"/>
@@ -28,9 +29,9 @@
                 <value>phone</value>
             </set>
         </property>
-    </bean>
+    </bean> -->
         
-  <bean id="mylutece-oauth2.authDataClientJson" class="fr.paris.lutece.plugins.mylutece.modules.oauth2.authentication.AuthDataClientJson">
+  <!-- <bean id="mylutece-oauth2.authDataClientJson" class="fr.paris.lutece.plugins.mylutece.modules.oauth2.authentication.AuthDataClientJson">
         <property name="name" value="authDataJson" />
         <property name="dataServerUri" value="https://fcp.integ01.dev-franceconnect.fr/api/v1/userinfo"/>
         <property name="tokenMethod" value="HEADER"/>
@@ -43,5 +44,5 @@
                 <value>phone</value>
             </set>
         </property>
-    </bean>
+    </bean> -->
 </beans>

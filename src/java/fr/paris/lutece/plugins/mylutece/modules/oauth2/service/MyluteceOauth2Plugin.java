@@ -47,6 +47,14 @@ public class MyluteceOauth2Plugin extends PluginDefaultImplementation
     private static final String AUTHENTICATION_BEAN_NAME = "mylutece-oauth2.authentication";
 
     /**
+     * Default constructor
+     */
+    public MyluteceOauth2Plugin( )
+    {
+        // Default constructor
+    }
+
+    /**
      * Initialize the module Database
      */
     @Override

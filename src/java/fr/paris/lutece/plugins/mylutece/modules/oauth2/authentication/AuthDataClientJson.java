@@ -37,8 +37,11 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+
+import jakarta.enterprise.inject.spi.CDI;
+import jakarta.inject.Inject;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.DeserializationFeature;
@@ -58,12 +61,18 @@ import fr.paris.lutece.util.json.JsonUtil;
 public class AuthDataClientJson extends AbstractDataClient
 {
     private static ObjectMapper _mapper;
+    private Oauth2Service _Oauth2Service;
 
     static
     {
         _mapper = new ObjectMapper( );
         _mapper.disable( DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES );
     }
+
+  public AuthDataClientJson( Oauth2Service oauth2Service )
+  {
+      _Oauth2Service = oauth2Service;
+  }
 
     /**
      * {@inheritDoc }
@@ -74,7 +83,7 @@ public class AuthDataClientJson extends AbstractDataClient
         try
         {
             Map<String, Object> mapUserInfo = parse( getData( token ) );
-            Oauth2Service.getInstance( ).processAuthentication( request, mapUserInfo, token );
+            _Oauth2Service.processAuthentication( request, mapUserInfo, token );
 
             LuteceUser user = SecurityService.getInstance( ).getRegisteredUser( request );
             byte [ ] strJsonResultAUth = JsonUtil.buildJsonResponse( new JsonResponse( user != null ) ).getBytes( );

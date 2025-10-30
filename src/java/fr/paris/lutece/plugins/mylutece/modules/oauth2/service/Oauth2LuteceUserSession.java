@@ -39,6 +39,14 @@ public class Oauth2LuteceUserSession
     private String _strLuteceUserName;
     private boolean _bUpToDate;
 
+    /**
+     * Default constructor
+     */
+    public Oauth2LuteceUserSession( )
+    {
+        // Default constructor
+    }
+
     public Oauth2LuteceUserSession( String strIdSession, String strLuteceUserName, boolean bUpToDate )
     {
         _strIdSession = strIdSession;
