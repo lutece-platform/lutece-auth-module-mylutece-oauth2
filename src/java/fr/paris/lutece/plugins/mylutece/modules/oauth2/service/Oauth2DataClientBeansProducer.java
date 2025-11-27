@@ -103,7 +103,7 @@ public class Oauth2DataClientBeansProducer
             client.setScope( scopeSet );
         }
 
-        client.setDefaultClient( isDefault.orElse( false ) );
+        client.setDefault( isDefault.orElse( false ) );
         
         // Note: The 'default' property would need to be handled by the OAuth2 service
         // if it needs to identify the default data client
@@ -152,7 +152,7 @@ public class Oauth2DataClientBeansProducer
         // Note: The 'default' property would need to be handled by the OAuth2 service
         // if it needs to identify the default data client
 
-        client.setDefaultClient( isDefault.orElse( false ) );
+        client.setDefault( isDefault.orElse( false ) );
         
         return client;
     }

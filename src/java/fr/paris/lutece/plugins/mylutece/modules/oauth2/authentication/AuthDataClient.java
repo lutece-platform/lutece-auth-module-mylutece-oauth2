@@ -84,6 +84,12 @@ public class AuthDataClient extends AbstractDataClient
       _Oauth2Service = oauth2Service;
   }
 
+public AuthDataClient( )
+{
+
+}
+
+
     /**
      * {@inheritDoc }
      */

@@ -50,7 +50,6 @@ import fr.paris.lutece.plugins.mylutece.authentication.PortalAuthentication;
 import fr.paris.lutece.plugins.mylutece.business.LuteceUserAttributeDescription;
 import fr.paris.lutece.plugins.mylutece.modules.oauth2.service.Oauth2Service;
 import fr.paris.lutece.plugins.oauth2.business.Token;
-import fr.paris.lutece.plugins.oauth2.service.DataClientService;
 import fr.paris.lutece.plugins.oauth2.service.TokenService;
 import fr.paris.lutece.portal.service.security.LoginRedirectException;
 import fr.paris.lutece.portal.service.security.LuteceUser;
@@ -71,10 +70,15 @@ public class Oauth2Authentication extends PortalAuthentication implements Serial
     private static final String CONSTANT_PATH_ICON = "images/local/skin/plugins/mylutece/modules/openid/mylutece-openid.png";
     private static final String PLUGIN_NAME = "mylutece-oauth2";
     private static final long serialVersionUID = 1L;
-    private static final String authDataClientName = "authData";
     
     @Inject
     private Oauth2Service _oauth2Service;
+    @Inject
+    private TokenService _tokenService;
+    @Inject
+    @Named( "mylutece-oauth2.authDataClient" )
+    private AuthDataClient _authDataClient;
+   
 
     /**
      * Gets the Authentification service name
@@ -203,11 +207,10 @@ public class Oauth2Authentication extends PortalAuthentication implements Serial
             if ( userOauth.getToken( ).getRefreshToken( ) != null )
             {
 
-                AuthDataClient authDataClient = (AuthDataClient) DataClientService.instance( ).getClient( authDataClientName );
-                Token token = TokenService.getService( ).getTokenByRefreshToken( userOauth.getToken( ).getRefreshToken( ) );
+                 Token token = _tokenService.getTokenByRefreshToken( userOauth.getToken( ).getRefreshToken( ) );
                 try
                 {
-                    Map<String, Object> mapUserInfo = authDataClient.parse( authDataClient.getData( token ) );
+                    Map<String, Object> mapUserInfo = _authDataClient.parse( _authDataClient.getData( token ) );
                     return _oauth2Service.processAuthentication( request, mapUserInfo, token );
 
                 }

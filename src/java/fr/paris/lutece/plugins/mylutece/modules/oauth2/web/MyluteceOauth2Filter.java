@@ -43,6 +43,7 @@ import java.util.Map;
 import java.util.Optional;
 
 import jakarta.annotation.PostConstruct;
+import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.inject.Named;
 import jakarta.servlet.Filter;
@@ -56,10 +57,8 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 
-import org.apache.commons.collections.map.HashedMap;
 import org.apache.commons.lang3.StringUtils;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
-import org.jboss.logging.annotations.Pos;
 
 import fr.paris.lutece.plugins.mylutece.modules.oauth2.authentication.AuthDataClient;
 import fr.paris.lutece.plugins.mylutece.modules.oauth2.authentication.Oauth2Authentication;
@@ -78,6 +77,7 @@ import fr.paris.lutece.util.url.UrlItem;
  * ParisConnectLuteceFilters
  *
  */
+@ApplicationScoped
 @WebFilter(filterName = "Mylutece Oauth2 Filter", urlPatterns = "/jsp/site/*")
 public class MyluteceOauth2Filter implements Filter
 {
@@ -98,14 +98,16 @@ public class MyluteceOauth2Filter implements Filter
     private static final String URL_STAR = "*";
     private static final String SEPARATOR = ",";
 
-
+    @Inject
     @ConfigProperty( name = PROPERTY_USE_PROMPT_NONE ,defaultValue = "false" )
     private boolean _bUsePromptNone;
+    @Inject
     @ConfigProperty( name = PROPERTY_VALIDATE_REFRESH_TOKEN  ,defaultValue = "true" )
     private boolean _bValidateRefreshToken;
-
+    @Inject
     @ConfigProperty(name = PROPERTY_USE_PROMPT_NONE_WHITE_LISTING_URLS)
-    Optional<String> _strTabWhiteListingUrls;
+    private Optional<String> _strTabWhiteListingUrls;
+    @Inject
     @ConfigProperty(name = PROPERTY_USE_PROMPT_NONE_WHITE_LISTING_HEADERS)
     Optional<String> _strTabWhiteListingHeaders;
 

@@ -35,12 +35,10 @@ package fr.paris.lutece.plugins.mylutece.modules.oauth2.web;
 
 import fr.paris.lutece.plugins.mylutece.modules.oauth2.authentication.Oauth2User;
 import fr.paris.lutece.plugins.mylutece.web.MyLuteceApp;
-import fr.paris.lutece.plugins.oauth2.business.Token;
-import fr.paris.lutece.plugins.oauth2.service.TokenService;
+
 import fr.paris.lutece.portal.service.security.LuteceUser;
 import fr.paris.lutece.portal.service.security.SecurityService;
 import fr.paris.lutece.portal.service.util.AppPathService;
-import fr.paris.lutece.portal.service.util.AppPropertiesService;
 import fr.paris.lutece.portal.util.mvc.commons.annotations.Action;
 import fr.paris.lutece.portal.util.mvc.commons.annotations.View;
 import fr.paris.lutece.portal.util.mvc.xpage.MVCApplication;
@@ -50,17 +48,19 @@ import fr.paris.lutece.util.url.UrlItem;
 
 import java.util.Map;
 
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.enterprise.context.SessionScoped;
+import jakarta.inject.Named;
 import jakarta.servlet.http.HttpServletRequest;
 
-import jakarta.enterprise.context.RequestScoped;
-import jakarta.inject.Named;
 
 /**
  * France Connect XPage Application
  */
-@RequestScoped
-@Named( "mylutece-oauth2.xpage.Oauth2" )
-@Controller( xpageName = "Oauth2", pagePathI18nKey = "module.mylutece.oauth2.loginPagePath", pageTitleI18nKey = "module.mylutece.oauth2.loginPageTitle" )
+
+@ApplicationScoped
+@Named( "mylutece-oauth2.xpage.oauth2" )
+@Controller( xpageName = "oauth2", pagePathI18nKey = "module.mylutece.oauth2.loginPagePath", pageTitleI18nKey = "module.mylutece.oauth2.loginPageTitle" )
 public class Oauth2App extends MVCApplication
 {
     // Views

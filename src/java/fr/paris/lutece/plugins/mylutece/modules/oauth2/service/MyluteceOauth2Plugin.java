@@ -44,7 +44,6 @@ public class MyluteceOauth2Plugin extends PluginDefaultImplementation
      * The plugin name
      */
     public static final String PLUGIN_NAME = "mylutece-oauth2";
-    private static final String AUTHENTICATION_BEAN_NAME = "mylutece-oauth2.authentication";
 
     /**
      * Default constructor
@@ -60,9 +59,6 @@ public class MyluteceOauth2Plugin extends PluginDefaultImplementation
     @Override
     public void init( )
     {
-        // Initialize the Database service
-       //init service
-    	Oauth2Service.getInstance().init();
-    	
+        
     }
 }

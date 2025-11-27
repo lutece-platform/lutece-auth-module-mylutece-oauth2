@@ -37,7 +37,6 @@ import jakarta.servlet.annotation.WebListener;
 import jakarta.servlet.http.HttpSessionEvent;
 import jakarta.servlet.http.HttpSessionListener;
 
-import jakarta.enterprise.inject.spi.CDI;
 import jakarta.inject.Inject;
 import fr.paris.lutece.plugins.mylutece.modules.oauth2.service.IOauth2LuteceUserSessionService;
 

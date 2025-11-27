@@ -113,19 +113,19 @@ public class Oauth2Service
     /** The Constant CONSTANT_LUTECE_USER_PROPERTIES_PATH. */
     private static final String CONSTANT_LUTECE_USER_PROPERTIES_PATH = "mylutece-oauth2.attribute";
 
-
+    @Inject
     @ConfigProperty(name = PROPERTY_USER_KEY_NAME)
     private  Optional<String> _strTabUserKey;
-
+    @Inject
     @ConfigProperty(name = PROPERTY_USER_MAPPING_ATTRIBUTES)
     private Optional<String> _strTabUserMappingAttributes;
 
 
     /** The attribute user mapping. */
-    private static Map<String, List<String>> ATTRIBUTE_USER_MAPPING;
+    private Map<String, List<String>> ATTRIBUTE_USER_MAPPING;
 
     /** The attribute user key name. */
-    private static String [ ] ATTRIBUTE_USER_KEY_NAME;
+    private  String [ ] ATTRIBUTE_USER_KEY_NAME;
 
     /** The Constant SEPARATOR. */
     private static final String SEPARATOR = ",";
@@ -137,6 +137,9 @@ public class Oauth2Service
     public void init( )
     {
      
+
+        ATTRIBUTE_USER_MAPPING = new HashMap<String, List<String>>( );
+
         if ( _strTabUserKey.isPresent( ) && StringUtils.isNotBlank( _strTabUserKey.get( ) ) )
         {
             ATTRIBUTE_USER_KEY_NAME = _strTabUserKey.get( ).split( SEPARATOR );
@@ -307,7 +310,6 @@ public class Oauth2Service
     
     	
     	String strUserMappingAttributes = AppPropertiesService.getProperty( PROPERTY_USER_MAPPING_ATTRIBUTES );
-        ATTRIBUTE_USER_MAPPING = new HashMap<String, List<String>>( );
 
         if ( StringUtils.isNotBlank( strUserMappingAttributes ) )
         {
