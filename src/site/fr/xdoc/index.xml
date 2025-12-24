@@ -17,28 +17,206 @@
             </subsection>
         </section>
         
-        <section name="Installation">
+        <section name="Configuration">
             
-            <subsection name="Configuration">
+            <subsection name="Configuration Properties (mylutece-oauth2.properties)">
                 <p>
-                    Vérifier dans le fichier <code>WEB-INF/conf/plugins/mylutece.properties</code> que
-                    l'authentification est bien activée comme suit :
+                    Les paramètres de configuration du module sont gérés dans le fichier
+                    <code>WEB-INF/conf/plugins/mylutece-oauth2.properties</code>.
                 </p>
-   <p>                       
-       <div class="source">
+
+                <h5>Service d'Authentification</h5>
+                <table>
+                    <tr>
+                        <th>Paramètre</th>
+                        <th>Description</th>
+                        <th>Valeur par défaut</th>
+                    </tr>
+                    <tr>
+                        <td><code>mylutece.url.login.page</code></td>
+                        <td>Page de connexion du service OAuth2</td>
+                        <td>servlet/plugins/oauth2/callback?data_client=authData</td>
+                    </tr>
+                    <tr>
+                        <td><code>mylutece.url.doLogout</code></td>
+                        <td>Page de déconnexion</td>
+                        <td>jsp/site/Portal.jsp?page=oauth2&amp;action=dologout</td>
+                    </tr>
+                    <tr>
+                        <td><code>mylutece-oauth2.service.name</code></td>
+                        <td>Nom du service d'authentification</td>
+                        <td>Lutece Oauth2 Authentication Service</td>
+                    </tr>
+                    <tr>
+                        <td><code>mylutece-oauth2.error.page</code></td>
+                        <td>Page de gestion des erreurs</td>
+                        <td>jsp/site/Portal.jsp?page=oauth2</td>
+                    </tr>
+                </table>
+
+                <h5>Gestion du Prompt None</h5>
+                <table>
+                    <tr>
+                        <th>Paramètre</th>
+                        <th>Description</th>
+                        <th>Valeur par défaut</th>
+                    </tr>
+                    <tr>
+                        <td><code>mylutece-oauth2.usePromptNone</code></td>
+                        <td>Active la redirection vers le serveur OAuth2 pour vérifier si l'utilisateur est déjà connecté avec le paramètre prompt=true</td>
+                        <td>false</td>
+                    </tr>
+                    <tr>
+                        <td><code>mylutece-oauth2.usePromptNoneWhiteListingHeaders</code></td>
+                        <td>Liste blanche des en-têtes HTTP (séparés par des virgules) qui désactivent le flux "use prompt none" 
+                        (ex: X-Requested-With pour les requêtes XMLHttpRequest)</td>
+                        <td>X-Requested-With</td>
+                    </tr>
+                    <tr>
+                        <td><code>mylutece-oauth2.usePromptNoneWhiteListingUrls</code></td>
+                        <td>Liste blanche des URLs (séparées par des virgules) qui désactivent le flux "use prompt none"</td>
+                        <td>vide</td>
+                    </tr>
+                </table>
+
+                <h5>Validation des Tokens</h5>
+                <table>
+                    <tr>
+                        <th>Paramètre</th>
+                        <th>Description</th>
+                        <th>Valeur par défaut</th>
+                    </tr>
+                    <tr>
+                        <td><code>mylutece-oauth2.validateRefreshToken</code></td>
+                        <td>Valide le refresh token pour vérifier si l'utilisateur est toujours connecté</td>
+                        <td>false</td>
+                    </tr>
+                </table>
+
+                <h5>Attributs Utilisateur</h5>
+                <table>
+                    <tr>
+                        <th>Paramètre</th>
+                        <th>Description</th>
+                    </tr>
+                    <tr>
+                        <td><code>mylutece-oauth2.attributeKeyUsername</code></td>
+                        <td>Attribut contenant le nom d'utilisateur Lutece</td>
+                    </tr>
+                    <tr>
+                        <td><code>mylutece-oauth2.attributeIdentityKey</code></td>
+                        <td>Attribut contenant la clé d'identité (optionnel)</td>
+                    </tr>
+                    <tr>
+                        <td><code>mylutece-oauth2.userMappingAttributes</code></td>
+                        <td>Liste des attributs à mapper (séparés par des virgules, optionnel). 
+                        Exemple: user.name.given,user.name.family,user.business-info.soi,user.business-info.organizationUnit</td>
+                    </tr>
+                </table>
+
+                <p><strong>Note :</strong> Les paramètres <code>mylutece-oauth2.attribute.user.*</code> permettent de mapper les attributs 
+                du fournisseur d'identités avec les champs d'identité de Lutece. Ces mappages ne sont documentés ici que comme concept général.</p>
+
+                <h5>Configuration DataClient</h5>
+                <table>
+                    <tr>
+                        <th>Paramètre</th>
+                        <th>Description</th>
+                    </tr>
+                    <tr>
+                        <td><code>mylutece-oauth2.dataclient.authData.dataServerUri</code></td>
+                        <td>URI du endpoint userinfo du serveur OAuth2 (ex: https://fcp.integ01.dev-franceconnect.fr/api/v1/userinfo)</td>
+                    </tr>
+                    <tr>
+                        <td><code>mylutece-oauth2.dataclient.authData.tokenMethod</code></td>
+                        <td>Méthode de transmission du token (ex: HEADER)</td>
+                    </tr>
+                    <tr>
+                        <td><code>mylutece-oauth2.dataclient.authData.scopes</code></td>
+                        <td>Scopes OAuth2 demandés (ex: openid,profile,email,address,phone)</td>
+                    </tr>
+                    <tr>
+                        <td><code>mylutece-oauth2.dataclient.authData.default</code></td>
+                        <td>Indique si ce client de données est le client par défaut</td>
+                    </tr>
+                </table>
+
+                <h5>Configuration DataClient JSON</h5>
+                <table>
+                    <tr>
+                        <th>Paramètre</th>
+                        <th>Description</th>
+                    </tr>
+                    <tr>
+                        <td><code>mylutece-oauth2.dataclient.authDataJson.dataServerUri</code></td>
+                        <td>URI du endpoint userinfo du serveur OAuth2 pour la version JSON</td>
+                    </tr>
+                    <tr>
+                        <td><code>mylutece-oauth2.dataclient.authDataJson.tokenMethod</code></td>
+                        <td>Méthode de transmission du token</td>
+                    </tr>
+                    <tr>
+                        <td><code>mylutece-oauth2.dataclient.authDataJson.scopes</code></td>
+                        <td>Scopes OAuth2 demandés</td>
+                    </tr>
+                    <tr>
+                        <td><code>mylutece-oauth2.dataclient.authDataJson.default</code></td>
+                        <td>Indique si ce client de données est le client par défaut</td>
+                    </tr>
+                </table>
+
+                <h5>Exemple de Configuration</h5>
+                <div class="source">
 <pre>
-# Enable authentication
-mylutece.authentication.enable=true
-    
-mylutece.authentication.class=fr.paris.lutece.plugins.mylutece.modules.oauth2.authentication.FranceConnectAuthentication
+# Service d'Authentification
+mylutece.url.login.page=servlet/plugins/oauth2/callback?data_client=authData
+mylutece.url.doLogout=jsp/site/Portal.jsp?page=oauth2&amp;action=dologout
+mylutece-oauth2.service.name=Lutece Oauth2 Authentication Service
+mylutece-oauth2.error.page=jsp/site/Portal.jsp?page=oauth2
 
-mylutece.url.login.page=Portal.jsp?page=franceconnect
-mylutece.url.doLogout=servlet/plugins/mylutece/modules/franceconnect/logout
-mylutece.url.default.redirect=../../Portal.jsp
+# Prompt None
+mylutece-oauth2.usePromptNone=false
+mylutece-oauth2.usePromptNoneWhiteListingHeaders=X-Requested-With
+mylutece-oauth2.usePromptNoneWhiteListingHeaders.X-Requested-With=XMLHttpRequest
 
+# Validation Tokens
+mylutece-oauth2.validateRefreshToken=false
+
+# Attributs Utilisateur
+mylutece-oauth2.attributeKeyUsername=uid
+mylutece-oauth2.attributeIdentityKey=
+mylutece-oauth2.userMappingAttributes=user.name.given,user.name.family,user.business-info.soi,user.business-info.organizationUnit
+mylutece-oauth2.attribute.user.name.given=prenom
+mylutece-oauth2.attribute.user.name.family=nom
+
+# DataClient Configuration
+mylutece-oauth2.dataclient.authData.dataServerUri=https://fcp.integ01.dev-franceconnect.fr/api/v1/userinfo
+mylutece-oauth2.dataclient.authData.tokenMethod=HEADER
+mylutece-oauth2.dataclient.authData.scopes=openid,profile,email,address,phone
+mylutece-oauth2.dataclient.authData.default=true
+
+# DataClient JSON Configuration
+mylutece-oauth2.dataclient.authDataJson.dataServerUri=https://fcp.integ01.dev-franceconnect.fr/api/v1/userinfo
+mylutece-oauth2.dataclient.authDataJson.tokenMethod=HEADER
+mylutece-oauth2.dataclient.authDataJson.scopes=openid,profile,email,address,phone
+mylutece-oauth2.dataclient.authDataJson.default=false
 </pre>
-       </div>
-       </p>
+                </div>
+
+                <h5>Recommandations</h5>
+                <ul>
+                    <li><strong>Scopes OAuth2 :</strong> Ajustez la liste des scopes en fonction des informations dont vous avez besoin 
+                    du serveur OAuth2</li>
+                    
+                    <li><strong>Mapping d'Attributs :</strong> Configurez les mappages <code>mylutece-oauth2.attribute.user.*</code> 
+                    selon la structure des attributs fournis par votre serveur OAuth2</li>
+                    
+                    <li><strong>Prompt None :</strong> Activez cette fonctionnalité avec prudence, car elle peut augmenter le trafic 
+                    vers le serveur OAuth2. Utilisez les listes blanches pour limiter son impact</li>
+                    
+                    <li><strong>DataClients :</strong> Vous pouvez configurer plusieurs clients de données (authData et authDataJson) 
+                    pour supporter différents formats de réponse du serveur OAuth2</li>
+                </ul>
 
                 </subsection>
                 
