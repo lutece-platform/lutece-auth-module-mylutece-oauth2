@@ -180,7 +180,7 @@ mylutece-oauth2.usePromptNoneWhiteListingHeaders=X-Requested-With
 mylutece-oauth2.usePromptNoneWhiteListingHeaders.X-Requested-With=XMLHttpRequest
 
 # Validation Tokens
-mylutece-oauth2.validateRefreshToken=false
+mylutece-oauth2.validateRefreshToken=true
 
 # Attributs Utilisateur
 mylutece-oauth2.attributeKeyUsername=uid

@@ -89,7 +89,7 @@
                     <tr>
                         <td><code>mylutece-oauth2.validateRefreshToken</code></td>
                         <td>Validates the refresh token to check if the user is still logged in</td>
-                        <td>false</td>
+                        <td>true</td>
                     </tr>
                 </table>
 
@@ -180,7 +180,7 @@ mylutece-oauth2.usePromptNoneWhiteListingHeaders=X-Requested-With
 mylutece-oauth2.usePromptNoneWhiteListingHeaders.X-Requested-With=XMLHttpRequest
 
 # Token Validation
-mylutece-oauth2.validateRefreshToken=false
+mylutece-oauth2.validateRefreshToken=true
 
 # User Attributes
 mylutece-oauth2.attributeKeyUsername=uid

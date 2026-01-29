@@ -15,50 +15,50 @@ Ce module s'appuie sur le [plugin FranceConnect](https://github.com/lutece-platf
 
 ## Configuration Properties (mylutece-oauth2.properties)
 
-Module configuration parameters are managed in the `WEB-INF/conf/plugins/mylutece-oauth2.properties` file.
-Authentication Service
-| Parameter| Description| Default Value|
+Les paramètres de configuration du module sont gérés dans le fichier `WEB-INF/conf/plugins/mylutece-oauth2.properties` .
+Service d'Authentification
+| Paramètre| Description| Valeur par défaut|
 |-----------------|-----------------|-----------------|
-|  `mylutece.url.login.page` | OAuth2 service login page| servlet/plugins/oauth2/callback?data_client=authData|
-|  `mylutece.url.doLogout` | Logout page| jsp/site/Portal.jsp?page=oauth2&action=dologout|
-|  `mylutece-oauth2.service.name` | Name of the authentication service| Lutece Oauth2 Authentication Service|
-|  `mylutece-oauth2.error.page` | Error handling page| jsp/site/Portal.jsp?page=oauth2|
-Prompt None Management
-| Parameter| Description| Default Value|
+|  `mylutece.url.login.page` | Page de connexion du service OAuth2| servlet/plugins/oauth2/callback?data_client=authData|
+|  `mylutece.url.doLogout` | Page de déconnexion| jsp/site/Portal.jsp?page=oauth2&action=dologout|
+|  `mylutece-oauth2.service.name` | Nom du service d'authentification| Lutece Oauth2 Authentication Service|
+|  `mylutece-oauth2.error.page` | Page de gestion des erreurs| jsp/site/Portal.jsp?page=oauth2|
+Gestion du Prompt None
+| Paramètre| Description| Valeur par défaut|
 |-----------------|-----------------|-----------------|
-|  `mylutece-oauth2.usePromptNone` | Enables redirection to the OAuth2 server to check if the user is already logged in with the prompt=true parameter| false|
-|  `mylutece-oauth2.usePromptNoneWhiteListingHeaders` | Whitelist of HTTP headers (comma-separated) that disable the "use prompt none" flow (e.g. X-Requested-With for XMLHttpRequest requests)| X-Requested-With|
-|  `mylutece-oauth2.usePromptNoneWhiteListingUrls` | Whitelist of URLs (comma-separated) that disable the "use prompt none" flow| empty|
-Token Validation
-| Parameter| Description| Default Value|
+|  `mylutece-oauth2.usePromptNone` | Active la redirection vers le serveur OAuth2 pour vérifier si l'utilisateur est déjà connecté avec le paramètre prompt=true| false|
+|  `mylutece-oauth2.usePromptNoneWhiteListingHeaders` | Liste blanche des en-têtes HTTP (séparés par des virgules) qui désactivent le flux "use prompt none" (ex: X-Requested-With pour les requêtes XMLHttpRequest)| X-Requested-With|
+|  `mylutece-oauth2.usePromptNoneWhiteListingUrls` | Liste blanche des URLs (séparées par des virgules) qui désactivent le flux "use prompt none"| vide|
+Validation des Tokens
+| Paramètre| Description| Valeur par défaut|
 |-----------------|-----------------|-----------------|
-|  `mylutece-oauth2.validateRefreshToken` | Validates the refresh token to check if the user is still logged in| true|
-User Attributes
-| Parameter| Description|
+|  `mylutece-oauth2.validateRefreshToken` | Valide le refresh token pour vérifier si l'utilisateur est toujours connecté| false|
+Attributs Utilisateur
+| Paramètre| Description|
 |-----------------|-----------------|
-|  `mylutece-oauth2.attributeKeyUsername` | Attribute containing the Lutece username|
-|  `mylutece-oauth2.attributeIdentityKey` | Attribute containing the identity key (optional)|
-|  `mylutece-oauth2.userMappingAttributes` | List of attributes to map (comma-separated, optional). Example: user.name.given,user.name.family,user.business-info.soi,user.business-info.organizationUnit|
+|  `mylutece-oauth2.attributeKeyUsername` | Attribut contenant le nom d'utilisateur Lutece|
+|  `mylutece-oauth2.attributeIdentityKey` | Attribut contenant la clé d'identité (optionnel)|
+|  `mylutece-oauth2.userMappingAttributes` | Liste des attributs à mapper (séparés par des virgules, optionnel). Exemple: user.name.given,user.name.family,user.business-info.soi,user.business-info.organizationUnit|
 
- **Note:** The `mylutece-oauth2.attribute.user.*` parameters allow you to map identity provider attributes with Lutece identity fields. These mappings are only documented here as a general concept.
-DataClient Configuration
-| Parameter| Description|
+ **Note :** Les paramètres `mylutece-oauth2.attribute.user.*` permettent de mapper les attributs du fournisseur d'identités avec les champs d'identité de Lutece. Ces mappages ne sont documentés ici que comme concept général.
+Configuration DataClient
+| Paramètre| Description|
 |-----------------|-----------------|
-|  `mylutece-oauth2.dataclient.authData.dataServerUri` | URI of the OAuth2 server userinfo endpoint (e.g.: https://fcp.integ01.dev-franceconnect.fr/api/v1/userinfo)|
-|  `mylutece-oauth2.dataclient.authData.tokenMethod` | Token transmission method (e.g.: HEADER)|
-|  `mylutece-oauth2.dataclient.authData.scopes` | OAuth2 scopes requested (e.g.: openid,profile,email,address,phone)|
-|  `mylutece-oauth2.dataclient.authData.default` | Indicates if this data client is the default one|
-DataClient JSON Configuration
-| Parameter| Description|
+|  `mylutece-oauth2.dataclient.authData.dataServerUri` | URI du endpoint userinfo du serveur OAuth2 (ex: https://fcp.integ01.dev-franceconnect.fr/api/v1/userinfo)|
+|  `mylutece-oauth2.dataclient.authData.tokenMethod` | Méthode de transmission du token (ex: HEADER)|
+|  `mylutece-oauth2.dataclient.authData.scopes` | Scopes OAuth2 demandés (ex: openid,profile,email,address,phone)|
+|  `mylutece-oauth2.dataclient.authData.default` | Indique si ce client de données est le client par défaut|
+Configuration DataClient JSON
+| Paramètre| Description|
 |-----------------|-----------------|
-|  `mylutece-oauth2.dataclient.authDataJson.dataServerUri` | URI of the OAuth2 server userinfo endpoint for JSON version|
-|  `mylutece-oauth2.dataclient.authDataJson.tokenMethod` | Token transmission method|
-|  `mylutece-oauth2.dataclient.authDataJson.scopes` | OAuth2 scopes requested|
-|  `mylutece-oauth2.dataclient.authDataJson.default` | Indicates if this data client is the default one|
-Configuration Example
+|  `mylutece-oauth2.dataclient.authDataJson.dataServerUri` | URI du endpoint userinfo du serveur OAuth2 pour la version JSON|
+|  `mylutece-oauth2.dataclient.authDataJson.tokenMethod` | Méthode de transmission du token|
+|  `mylutece-oauth2.dataclient.authDataJson.scopes` | Scopes OAuth2 demandés|
+|  `mylutece-oauth2.dataclient.authDataJson.default` | Indique si ce client de données est le client par défaut|
+Exemple de Configuration
 ```
 
-# Authentication Service
+# Service d'Authentification
 mylutece.url.login.page=servlet/plugins/oauth2/callback?data_client=authData
 mylutece.url.doLogout=jsp/site/Portal.jsp?page=oauth2&action=dologout
 mylutece-oauth2.service.name=Lutece Oauth2 Authentication Service
@@ -69,10 +69,10 @@ mylutece-oauth2.usePromptNone=false
 mylutece-oauth2.usePromptNoneWhiteListingHeaders=X-Requested-With
 mylutece-oauth2.usePromptNoneWhiteListingHeaders.X-Requested-With=XMLHttpRequest
 
-# Token Validation
+# Validation Tokens
 mylutece-oauth2.validateRefreshToken=true
 
-# User Attributes
+# Attributs Utilisateur
 mylutece-oauth2.attributeKeyUsername=uid
 mylutece-oauth2.attributeIdentityKey=
 mylutece-oauth2.userMappingAttributes=user.name.given,user.name.family,user.business-info.soi,user.business-info.organizationUnit
@@ -92,12 +92,12 @@ mylutece-oauth2.dataclient.authDataJson.scopes=openid,profile,email,address,phon
 mylutece-oauth2.dataclient.authDataJson.default=false
 
 ```
-Recommendations
+Recommandations
  
-*  **OAuth2 Scopes:** Adjust the scope list based on the information you need from the OAuth2 server
-*  **Attribute Mapping:** Configure the `mylutece-oauth2.attribute.user.*` mappings according to the attribute structure provided by your OAuth2 server
-*  **Prompt None:** Enable this feature with caution, as it can increase traffic to the OAuth2 server. Use whitelists to limit its impact
-*  **DataClients:** You can configure multiple data clients (authData and authDataJson) to support different response formats from the OAuth2 server
+*  **Scopes OAuth2 :** Ajustez la liste des scopes en fonction des informations dont vous avez besoin du serveur OAuth2
+*  **Mapping d'Attributs :** Configurez les mappages `mylutece-oauth2.attribute.user.*` selon la structure des attributs fournis par votre serveur OAuth2
+*  **Prompt None :** Activez cette fonctionnalité avec prudence, car elle peut augmenter le trafic vers le serveur OAuth2. Utilisez les listes blanches pour limiter son impact
+*  **DataClients :** Vous pouvez configurer plusieurs clients de données (authData et authDataJson) pour supporter différents formats de réponse du serveur OAuth2
 
 ## Usage
 
