@@ -46,6 +46,7 @@ import fr.paris.lutece.portal.util.mvc.xpage.annotations.Controller;
 import fr.paris.lutece.portal.web.xpages.XPage;
 import fr.paris.lutece.util.url.UrlItem;
 
+import java.io.Serializable;
 import java.util.Map;
 
 import jakarta.enterprise.context.ApplicationScoped;

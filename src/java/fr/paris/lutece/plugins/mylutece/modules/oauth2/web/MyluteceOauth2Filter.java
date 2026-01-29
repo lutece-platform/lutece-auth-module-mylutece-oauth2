@@ -34,6 +34,7 @@
 package fr.paris.lutece.plugins.mylutece.modules.oauth2.web;
 
 import java.io.IOException;
+import java.io.Serializable;
 import java.net.URLEncoder;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -79,8 +80,9 @@ import fr.paris.lutece.util.url.UrlItem;
  */
 @ApplicationScoped
 @WebFilter(filterName = "Mylutece Oauth2 Filter", urlPatterns = "/jsp/site/*")
-public class MyluteceOauth2Filter implements Filter
+public class MyluteceOauth2Filter implements Filter, Serializable
 {
+    private static final long serialVersionUID = 1L;
 
     public static final String SESSION_MYLUTECE_OAUTH2_FILTER_ENABLE = "enable";
     public static final String PARAM_PROMPT_NONE = "prompt=none";

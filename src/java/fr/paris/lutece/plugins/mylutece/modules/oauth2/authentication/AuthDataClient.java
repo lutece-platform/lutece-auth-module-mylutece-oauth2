@@ -34,6 +34,7 @@
 package fr.paris.lutece.plugins.mylutece.modules.oauth2.authentication;
 
 import java.io.IOException;
+import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -62,8 +63,9 @@ import fr.paris.lutece.util.http.SecurityUtil;
 /**
  * UserInfoDataClient
  */
-public class AuthDataClient extends AbstractDataClient
+public class AuthDataClient extends AbstractDataClient implements Serializable
 {
+    private static final long serialVersionUID = 1L;
 
     public static final String ERROR_TYPE_LOGIN_REQUIRED = "login_required";
     public static final String REINIT_ERROR_LOGIN = "reinit_error_login";

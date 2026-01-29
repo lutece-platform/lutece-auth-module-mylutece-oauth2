@@ -34,6 +34,7 @@
 package fr.paris.lutece.plugins.mylutece.modules.oauth2.authentication;
 
 import java.io.IOException;
+import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -55,8 +56,10 @@ import fr.paris.lutece.util.json.JsonUtil;
 /**
  * UserInfoDataClient
  */
-public class AuthDataClientJson extends AbstractDataClient
+public class AuthDataClientJson extends AbstractDataClient implements Serializable
 {
+    private static final long serialVersionUID = 1L;
+    
     private static ObjectMapper _mapper;
     private Oauth2Service _Oauth2Service;
 

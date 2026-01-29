@@ -34,6 +34,7 @@
 package fr.paris.lutece.plugins.mylutece.modules.oauth2.web;
 
 import java.io.IOException;
+import java.io.Serializable;
 
 import jakarta.servlet.Filter;
 import jakarta.servlet.FilterChain;
@@ -56,8 +57,10 @@ import fr.paris.lutece.plugins.mylutece.modules.oauth2.service.IOauth2LuteceUser
  *
  */
 @WebFilter(filterName = "Oauth 2 Notify Lutece User", urlPatterns = "/plugins/myluteceoauth2/notifyLuteceUser")
-public class NotifyLuteceUserFilter implements Filter
+public class NotifyLuteceUserFilter implements Filter, Serializable
 {
+    private static final long serialVersionUID = 1L;
+    
     private final static String PARAMETER_UID = "uid";
 
     /**

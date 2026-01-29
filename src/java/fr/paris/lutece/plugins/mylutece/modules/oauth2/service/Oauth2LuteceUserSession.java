@@ -33,8 +33,12 @@
  */
 package fr.paris.lutece.plugins.mylutece.modules.oauth2.service;
 
-public class Oauth2LuteceUserSession
+import java.io.Serializable;
+
+public class Oauth2LuteceUserSession implements Serializable
 {
+    private static final long serialVersionUID = 1L;
+    
     private String _strIdSession;
     private String _strLuteceUserName;
     private boolean _bUpToDate;
