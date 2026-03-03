@@ -64,9 +64,11 @@ import org.eclipse.microprofile.config.inject.ConfigProperty;
 import fr.paris.lutece.plugins.mylutece.modules.oauth2.authentication.AuthDataClient;
 import fr.paris.lutece.plugins.mylutece.modules.oauth2.authentication.Oauth2Authentication;
 import fr.paris.lutece.plugins.mylutece.modules.oauth2.authentication.Oauth2User;
+import fr.paris.lutece.plugins.mylutece.modules.oauth2.service.MyluteceOauth2Plugin;
 import fr.paris.lutece.plugins.mylutece.modules.oauth2.service.Oauth2LuteceUserSessionService;
 import fr.paris.lutece.plugins.oauth2.business.Token;
 import fr.paris.lutece.plugins.oauth2.service.TokenService;
+import fr.paris.lutece.portal.service.plugin.PluginService;
 import fr.paris.lutece.portal.service.security.LuteceUser;
 import fr.paris.lutece.portal.service.security.SecurityService;
 import fr.paris.lutece.portal.service.util.AppPathService;
@@ -87,7 +89,6 @@ public class MyluteceOauth2Filter implements Filter, Serializable
     public static final String SESSION_MYLUTECE_OAUTH2_FILTER_ENABLE = "enable";
     public static final String PARAM_PROMPT_NONE = "prompt=none";
     public static final String PARAM_BACK_PROMPT_URL = "bck_prompt_url";
-        
 
     private static final String PROPERTY_USE_PROMPT_NONE = "mylutece-oauth2.usePromptNone";
     private static final String PROPERTY_USE_PROMPT_NONE_WHITE_LISTING_URLS = "mylutece-oauth2.usePromptNoneWhiteListingUrls";
@@ -142,6 +143,12 @@ public class MyluteceOauth2Filter implements Filter, Serializable
     @Override
     public void doFilter( ServletRequest servletRequest, ServletResponse response, FilterChain chain ) throws IOException, ServletException
     {
+        if ( !PluginService.isPluginEnable( MyluteceOauth2Plugin.PLUGIN_NAME ) )
+        {
+            chain.doFilter( servletRequest, response );
+            return;
+        }
+
         HttpServletRequest request = (HttpServletRequest) servletRequest;
         HttpServletResponse resp = (HttpServletResponse) response;
         if ( request != null && "GET".equals( request.getMethod( ) ) )

@@ -51,6 +51,8 @@ import jakarta.enterprise.inject.spi.CDI;
 import org.apache.commons.lang3.StringUtils;
 
 import fr.paris.lutece.plugins.mylutece.modules.oauth2.service.IOauth2LuteceUserSessionService;
+import fr.paris.lutece.plugins.mylutece.modules.oauth2.service.MyluteceOauth2Plugin;
+import fr.paris.lutece.portal.service.plugin.PluginService;
 
 /**
  * ParisConnectLuteceFilters
@@ -61,7 +63,7 @@ public class NotifyLuteceUserFilter implements Filter, Serializable
 {
     private static final long serialVersionUID = 1L;
     
-    private final static String PARAMETER_UID = "uid";
+    private static final String PARAMETER_UID = "uid";
 
     /**
      *
@@ -80,6 +82,12 @@ public class NotifyLuteceUserFilter implements Filter, Serializable
     @Override
     public void doFilter( ServletRequest servletRequest, ServletResponse servletResponse, FilterChain chain ) throws IOException, ServletException
     {
+        if ( !PluginService.isPluginEnable( MyluteceOauth2Plugin.PLUGIN_NAME ) )
+        {
+            chain.doFilter( servletRequest, servletResponse );
+            return;
+        }
+
         HttpServletRequest request = (HttpServletRequest) servletRequest;
         HttpServletResponse response = (HttpServletResponse) servletResponse;
 
