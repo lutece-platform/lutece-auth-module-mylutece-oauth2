@@ -307,7 +307,6 @@ public final class Oauth2Service
     
     	
     	String strUserMappingAttributes = AppPropertiesService.getProperty( PROPERTY_USER_MAPPING_ATTRIBUTES );
-        ATTRIBUTE_USER_MAPPING = new HashMap<String, List<String>>( );
 
         if ( StringUtils.isNotBlank( strUserMappingAttributes ) )
         {
