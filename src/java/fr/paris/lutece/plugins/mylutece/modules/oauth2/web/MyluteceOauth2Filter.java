@@ -57,6 +57,7 @@ import org.apache.commons.lang3.StringUtils;
 import fr.paris.lutece.plugins.mylutece.modules.oauth2.authentication.AuthDataClient;
 import fr.paris.lutece.plugins.mylutece.modules.oauth2.authentication.Oauth2Authentication;
 import fr.paris.lutece.plugins.mylutece.modules.oauth2.authentication.Oauth2User;
+import fr.paris.lutece.plugins.mylutece.modules.oauth2.service.BackUrlTokenService;
 import fr.paris.lutece.plugins.mylutece.modules.oauth2.service.Oauth2LuteceUserSessionService;
 import fr.paris.lutece.plugins.oauth2.business.Token;
 import fr.paris.lutece.plugins.oauth2.service.TokenService;
@@ -131,9 +132,10 @@ public class MyluteceOauth2Filter implements Filter
                     session.setAttribute( AuthDataClient.SESSION_ERROR_LOGIN, "" );
                     String strRedirectLoginUrl = PortalJspBean.redirectLogin( request );
                     String strNextUrl=PortalJspBean.getLoginNextUrl(request);
-                    String strNextUrlEncoded=URLEncoder.encode( strNextUrl, "UTF-8" );
-                    
-                    resp.sendRedirect( strRedirectLoginUrl + "&" + "complementary_parameter=" + URLEncoder.encode( PARAM_PROMPT_NONE , "UTF-8" ) +"&" +PARAM_BACK_PROMPT_URL+"="+strNextUrlEncoded);
+                    // The back url is transported as a server-signed (HMAC) token to prevent open redirect on the callback side
+                    String strBackUrlToken=URLEncoder.encode( BackUrlTokenService.buildToken( strNextUrl ), "UTF-8" );
+
+                    resp.sendRedirect( strRedirectLoginUrl + "&" + "complementary_parameter=" + URLEncoder.encode( PARAM_PROMPT_NONE , "UTF-8" ) +"&" +PARAM_BACK_PROMPT_URL+"="+strBackUrlToken);
                     
                     
 
