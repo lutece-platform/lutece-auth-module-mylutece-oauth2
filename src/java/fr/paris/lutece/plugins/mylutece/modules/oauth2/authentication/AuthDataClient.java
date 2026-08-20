@@ -38,6 +38,7 @@ import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 
+import jakarta.enterprise.inject.spi.CDI;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
@@ -50,6 +51,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import fr.paris.lutece.plugins.mylutece.modules.oauth2.service.BackUrlTokenService;
 import fr.paris.lutece.plugins.mylutece.modules.oauth2.service.Oauth2Service;
 import fr.paris.lutece.plugins.mylutece.modules.oauth2.web.MyluteceOauth2Filter;
 import fr.paris.lutece.plugins.oauth2.business.Token;
@@ -58,7 +60,6 @@ import fr.paris.lutece.plugins.oauth2.web.Constants;
 import fr.paris.lutece.portal.service.util.AppLogService;
 import fr.paris.lutece.portal.service.util.AppPathService;
 import fr.paris.lutece.portal.web.PortalJspBean;
-import fr.paris.lutece.util.http.SecurityUtil;
 
 /**
  * UserInfoDataClient
@@ -147,17 +148,15 @@ public AuthDataClient( )
                
                 if ( StringUtils.isEmpty(strLoginNextUrl)  )
                 {
-                	
-                    strLoginNextUrl=request.getParameter(MyluteceOauth2Filter.PARAM_BACK_PROMPT_URL);
-                    //disable the possibility of open redirect
-                    if(!SecurityUtil.isInternalRedirectUrlSafe(strLoginNextUrl, request))
+                    // The back url is carried as a server-signed (HMAC) token : a forged or tampered value fails
+                    // verification and is rejected, which prevents open redirect independently of the core version.
+                    String strBackUrlToken = request.getParameter( MyluteceOauth2Filter.PARAM_BACK_PROMPT_URL );
+                    strLoginNextUrl = CDI.current( ).select( BackUrlTokenService.class ).get( ).verifyToken( strBackUrlToken, request );
+                    if ( strLoginNextUrl == null )
                     {
-                    	
-                    	AppLogService.error("Oauth2 - open redirect url detected for {}",strLoginNextUrl);
+                    	AppLogService.error( "Oauth2 - invalid or unsafe back url token detected for {}", strBackUrlToken );
                     	strLoginNextUrl = AppPathService.getAbsoluteUrl( request, AppPathService.getRootForwardUrl( ) );
                     }
-                    
-                    
                 }
                 
                 
