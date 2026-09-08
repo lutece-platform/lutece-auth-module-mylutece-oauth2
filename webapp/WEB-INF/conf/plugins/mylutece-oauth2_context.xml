@@ -9,39 +9,33 @@
        http://www.springframework.org/schema/context/spring-context-3.0.xsd
        http://www.springframework.org/schema/tx
        http://www.springframework.org/schema/tx/spring-tx-3.0.xsd">
-       
-       
-       
+
+  <!-- All DataClient values are externalized in WEB-INF/conf/plugins/mylutece-oauth2.properties
+       (keys mylutece-oauth2.dataclient.<name>.*). Comma separated lists for scopes and acrValues. -->
+
   <bean id="mylutece-oauth2.oauth2LuteceUserSessionService" class="fr.paris.lutece.plugins.mylutece.modules.oauth2.service.Oauth2LuteceUserSessionService"/>
   <bean id="mylutece-oauth2.authentication" class="fr.paris.lutece.plugins.mylutece.modules.oauth2.authentication.Oauth2Authentication"/>
+
   <bean id="mylutece-oauth2.authDataClient" class="fr.paris.lutece.plugins.mylutece.modules.oauth2.authentication.AuthDataClient">
-        <property name="name" value="authData" />
-        <property name="default" value="true"/>
-        <property name="dataServerUri" value="https://fcp.integ01.dev-franceconnect.fr/api/v1/userinfo"/>
-        <property name="tokenMethod" value="HEADER"/>
-        <property name="scope">
-            <set value-type="java.lang.String">
-                <value>openid</value>
-                <value>profile</value>
-                <value>email</value>
-                <value>address</value>
-                <value>phone</value>
-            </set>
-        </property>
+        <property name="name" value="${mylutece-oauth2.dataclient.authData.name}" />
+        <property name="default" value="${mylutece-oauth2.dataclient.authData.default}"/>
+        <property name="dataServerUri" value="${mylutece-oauth2.dataclient.authData.dataServerUri}"/>
+        <property name="tokenMethod" value="${mylutece-oauth2.dataclient.authData.tokenMethod}"/>
+        <property name="scope" value="#{'${mylutece-oauth2.dataclient.authData.scopes}'.split('\s*,\s*')}"/>
+        <!-- Optional eIDAS management : uncomment and set mylutece-oauth2.dataclient.authData.acrValues -->
+        <!--
+        <property name="acrValuesSet" value="#{'${mylutece-oauth2.dataclient.authData.acrValues}'.split('\s*,\s*')}"/>
+        -->
     </bean>
-        
+
   <bean id="mylutece-oauth2.authDataClientJson" class="fr.paris.lutece.plugins.mylutece.modules.oauth2.authentication.AuthDataClientJson">
-        <property name="name" value="authDataJson" />
-        <property name="dataServerUri" value="https://fcp.integ01.dev-franceconnect.fr/api/v1/userinfo"/>
-        <property name="tokenMethod" value="HEADER"/>
-        <property name="scope">
-            <set value-type="java.lang.String">
-                <value>openid</value>
-                <value>profile</value>
-                <value>email</value>
-                <value>address</value>
-                <value>phone</value>
-            </set>
-        </property>
+        <property name="name" value="${mylutece-oauth2.dataclient.authDataJson.name}" />
+        <property name="dataServerUri" value="${mylutece-oauth2.dataclient.authDataJson.dataServerUri}"/>
+        <property name="tokenMethod" value="${mylutece-oauth2.dataclient.authDataJson.tokenMethod}"/>
+        <property name="scope" value="#{'${mylutece-oauth2.dataclient.authDataJson.scopes}'.split('\s*,\s*')}"/>
+        <!-- Optional eIDAS management : uncomment and set mylutece-oauth2.dataclient.authDataJson.acrValues -->
+        <!--
+        <property name="acrValuesSet" value="#{'${mylutece-oauth2.dataclient.authDataJson.acrValues}'.split('\s*,\s*')}"/>
+        -->
     </bean>
 </beans>
