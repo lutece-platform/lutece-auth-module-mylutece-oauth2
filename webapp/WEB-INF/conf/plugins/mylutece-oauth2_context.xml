@@ -28,14 +28,15 @@
         -->
     </bean>
 
+  <!-- Alternative DataClient "authDataJson" (userinfo parsed as JSON). Disabled by default : to use it, uncomment this bean,
+       the mylutece-oauth2.dataclient.authDataJson.* keys in mylutece-oauth2.properties, and call the callback with data_client=authDataJson.
   <bean id="mylutece-oauth2.authDataClientJson" class="fr.paris.lutece.plugins.mylutece.modules.oauth2.authentication.AuthDataClientJson">
         <property name="name" value="${mylutece-oauth2.dataclient.authDataJson.name}" />
         <property name="dataServerUri" value="${mylutece-oauth2.dataclient.authDataJson.dataServerUri}"/>
         <property name="tokenMethod" value="${mylutece-oauth2.dataclient.authDataJson.tokenMethod}"/>
         <property name="scope" value="#{'${mylutece-oauth2.dataclient.authDataJson.scopes}'.split('\s*,\s*')}"/>
-        <!-- Optional eIDAS management : uncomment and set mylutece-oauth2.dataclient.authDataJson.acrValues -->
-        <!--
+        Optional eIDAS management : also add
         <property name="acrValuesSet" value="#{'${mylutece-oauth2.dataclient.authDataJson.acrValues}'.split('\s*,\s*')}"/>
-        -->
     </bean>
+  -->
 </beans>

@@ -44,8 +44,8 @@ mylutece.url.default.redirect=../../Portal.jsp
                 
             <subsection name="Configuration des DataClients">
                 <p>
-                    Les deux DataClients du module (<code>authData</code>, par d&#233;faut, et <code>authDataJson</code>)
-                    sont d&#233;clar&#233;s dans <code>WEB-INF/conf/plugins/mylutece-oauth2_context.xml</code> mais toutes
+                    Les DataClients du module (<code>authData</code>, par d&#233;faut, et <code>authDataJson</code>, comment&#233;
+                    par d&#233;faut) sont d&#233;clar&#233;s dans <code>WEB-INF/conf/plugins/mylutece-oauth2_context.xml</code> mais toutes
                     leurs valeurs sont lues dans <code>WEB-INF/conf/plugins/mylutece-oauth2.properties</code> :
                 </p>
    <p>
@@ -58,10 +58,10 @@ mylutece-oauth2.dataclient.authData.tokenMethod=HEADER
 mylutece-oauth2.dataclient.authData.scopes=openid,profile,email
 #mylutece-oauth2.dataclient.authData.acrValues=eidas1
 
-mylutece-oauth2.dataclient.authDataJson.name=authDataJson
-mylutece-oauth2.dataclient.authDataJson.dataServerUri=https://.../userinfo
-mylutece-oauth2.dataclient.authDataJson.tokenMethod=HEADER
-mylutece-oauth2.dataclient.authDataJson.scopes=openid,profile,email
+#mylutece-oauth2.dataclient.authDataJson.name=authDataJson
+#mylutece-oauth2.dataclient.authDataJson.dataServerUri=https://.../userinfo
+#mylutece-oauth2.dataclient.authDataJson.tokenMethod=HEADER
+#mylutece-oauth2.dataclient.authDataJson.scopes=openid,profile,email
 </pre>
        </div>
        </p>
