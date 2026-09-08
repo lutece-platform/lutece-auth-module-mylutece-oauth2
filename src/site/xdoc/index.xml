@@ -42,6 +42,36 @@ mylutece.url.default.redirect=../../Portal.jsp
 
                 </subsection>
                 
+            <subsection name="DataClient configuration">
+                <p>
+                    The two DataClients of the module (<code>authData</code>, the default one, and <code>authDataJson</code>)
+                    are declared in <code>WEB-INF/conf/plugins/mylutece-oauth2_context.xml</code> but all their values
+                    are read from <code>WEB-INF/conf/plugins/mylutece-oauth2.properties</code>:
+                </p>
+   <p>
+       <div class="source">
+<pre>
+mylutece-oauth2.dataclient.authData.name=authData
+mylutece-oauth2.dataclient.authData.default=true
+mylutece-oauth2.dataclient.authData.dataServerUri=https://.../userinfo
+mylutece-oauth2.dataclient.authData.tokenMethod=HEADER
+mylutece-oauth2.dataclient.authData.scopes=openid,profile,email
+#mylutece-oauth2.dataclient.authData.acrValues=eidas1
+
+mylutece-oauth2.dataclient.authDataJson.name=authDataJson
+mylutece-oauth2.dataclient.authDataJson.dataServerUri=https://.../userinfo
+mylutece-oauth2.dataclient.authDataJson.tokenMethod=HEADER
+mylutece-oauth2.dataclient.authDataJson.scopes=openid,profile,email
+</pre>
+       </div>
+       </p>
+                <p>
+                    <code>scopes</code> and <code>acrValues</code> are comma separated lists. The <code>acrValuesSet</code>
+                    property is commented out in the context file: uncomment it and set the <code>acrValues</code> key to
+                    enable it. Editing the context file is no longer needed to switch environments.
+                </p>
+            </subsection>
+
             <subsection name="Usage">
                 <p>La page d'authentification FranceConnect s'appelle à partir de l'URL suivante :</p>
                 <p><code>http://myhost/lutece/jsp/site/Portal.jsp?page=franceconnect</code></p>

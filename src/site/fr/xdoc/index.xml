@@ -42,6 +42,37 @@ mylutece.url.default.redirect=../../Portal.jsp
 
                 </subsection>
                 
+            <subsection name="Configuration des DataClients">
+                <p>
+                    Les deux DataClients du module (<code>authData</code>, par d&#233;faut, et <code>authDataJson</code>)
+                    sont d&#233;clar&#233;s dans <code>WEB-INF/conf/plugins/mylutece-oauth2_context.xml</code> mais toutes
+                    leurs valeurs sont lues dans <code>WEB-INF/conf/plugins/mylutece-oauth2.properties</code> :
+                </p>
+   <p>
+       <div class="source">
+<pre>
+mylutece-oauth2.dataclient.authData.name=authData
+mylutece-oauth2.dataclient.authData.default=true
+mylutece-oauth2.dataclient.authData.dataServerUri=https://.../userinfo
+mylutece-oauth2.dataclient.authData.tokenMethod=HEADER
+mylutece-oauth2.dataclient.authData.scopes=openid,profile,email
+#mylutece-oauth2.dataclient.authData.acrValues=eidas1
+
+mylutece-oauth2.dataclient.authDataJson.name=authDataJson
+mylutece-oauth2.dataclient.authDataJson.dataServerUri=https://.../userinfo
+mylutece-oauth2.dataclient.authDataJson.tokenMethod=HEADER
+mylutece-oauth2.dataclient.authDataJson.scopes=openid,profile,email
+</pre>
+       </div>
+       </p>
+                <p>
+                    <code>scopes</code> et <code>acrValues</code> sont des listes s&#233;par&#233;es par des virgules.
+                    La propri&#233;t&#233; <code>acrValuesSet</code> est comment&#233;e dans le fichier de contexte : la d&#233;commenter
+                    et renseigner la cl&#233; <code>acrValues</code> pour l'activer. Il n'est plus n&#233;cessaire de modifier
+                    le fichier de contexte pour changer d'environnement.
+                </p>
+            </subsection>
+
             <subsection name="Usage">
                 <p>La page d'authentification FranceConnect s'appelle à partir de l'URL suivante :</p>
                 <p><code>http://myhost/lutece/jsp/site/Portal.jsp?page=franceconnect</code></p>
