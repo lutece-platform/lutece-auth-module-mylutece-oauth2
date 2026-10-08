@@ -3,14 +3,14 @@
     <parent>
         <artifactId>lutece-global-pom</artifactId>
         <groupId>fr.paris.lutece.tools</groupId>
-        <version>7.0.2</version>
+        <version>7.0.8</version>
     </parent>
 
     <modelVersion>4.0.0</modelVersion>
     <groupId>fr.paris.lutece.plugins</groupId>
     <artifactId>module-mylutece-oauth2</artifactId>
     <packaging>lutece-plugin</packaging>
-    <version>2.1.7-SNAPSHOT</version>
+    <version>2.1.7-beta-01</version>
     <name>Lutece mylutece oauth2 module</name>
 
     <repositories>
