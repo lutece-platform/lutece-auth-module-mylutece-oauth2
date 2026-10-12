@@ -41,7 +41,7 @@ public class Oauth2LuteceUserSession implements Serializable
     
     private String _strIdSession;
     private String _strLuteceUserName;
-    private boolean _bUpToDate;
+    private volatile boolean _bUpToDate;
 
     /**
      * Default constructor

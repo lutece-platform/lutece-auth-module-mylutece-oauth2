@@ -36,17 +36,18 @@ package fr.paris.lutece.plugins.mylutece.modules.oauth2.service;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Named;
 
-import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 
 @ApplicationScoped
 @Named( "mylutece-oauth2.oauth2LuteceUserSessionService" )
 public class Oauth2LuteceUserSessionService implements IOauth2LuteceUserSessionService
 {
-    private static Map<String, Oauth2LuteceUserSession> _hashSession = new HashMap<>( );
-    private static Map<String, Set<String>> _hashLuteceUserName = new HashMap<>( );
+    // Read and written by concurrent requests. The registry is local to this instance: a notification received by another
+    // instance does not reach the sessions registered here
+    private final Map<String, Oauth2LuteceUserSession> _hashSession = new ConcurrentHashMap<>( );
+    private final Map<String, Set<String>> _hashLuteceUserName = new ConcurrentHashMap<>( );
 
     /**
      * Default constructor for CDI
@@ -58,9 +59,11 @@ public class Oauth2LuteceUserSessionService implements IOauth2LuteceUserSessionS
 
     public boolean isLuteceUserUpToDate( String strSession )
     {
-        if ( _hashSession.containsKey( strSession ) && !_hashSession.get( strSession ).isUpToDate( ) )
+        Oauth2LuteceUserSession session = _hashSession.get( strSession );
+
+        if ( session != null && !session.isUpToDate( ) )
         {
-            _hashSession.get( strSession ).setUpToDate( true );
+            session.setUpToDate( true );
 
             return false;
         }
@@ -70,45 +73,43 @@ public class Oauth2LuteceUserSessionService implements IOauth2LuteceUserSessionS
 
     public void addLuteceUserSession( String strLuteceUserName, String strSession )
     {
-        if ( !_hashLuteceUserName.containsKey( strLuteceUserName ) )
-        {
-            _hashLuteceUserName.put( strLuteceUserName, new HashSet<String>( ) );
-        }
+        // Added inside compute: a concurrent removal of the last session of this user cannot drop the set in between
+        _hashLuteceUserName.compute( strLuteceUserName, ( k, setSession ) -> {
+            Set<String> set = ( setSession != null ) ? setSession : ConcurrentHashMap.newKeySet( );
+            set.add( strSession );
 
-        _hashLuteceUserName.get( strLuteceUserName ).add( strSession );
+            return set;
+        } );
         _hashSession.put( strSession, new Oauth2LuteceUserSession( strSession, strLuteceUserName, true ) );
     }
 
     public void removeLuteceUserSession( String strSession )
     {
-        if ( _hashSession.containsKey( strSession ) )
+        Oauth2LuteceUserSession session = _hashSession.remove( strSession );
+
+        if ( session != null )
         {
-            String strLuteceUserName = _hashSession.get( strSession ).getLuteceUserName( );
-            _hashSession.remove( strSession );
+            _hashLuteceUserName.computeIfPresent( session.getLuteceUserName( ), ( k, setSession ) -> {
+                setSession.remove( strSession );
 
-            if ( _hashLuteceUserName.containsKey( strLuteceUserName ) )
-            {
-                _hashLuteceUserName.get( strLuteceUserName ).remove( strSession );
-
-                if ( _hashLuteceUserName.get( strLuteceUserName ).isEmpty( ) )
-                {
-                    _hashLuteceUserName.remove( strLuteceUserName );
-                }
-            }
+                return setSession.isEmpty( ) ? null : setSession;
+            } );
         }
     }
 
     public void notifyLuteceUserUpdating( String strLuteceUserName )
     {
-        if ( _hashLuteceUserName.containsKey( strLuteceUserName ) )
-        {
-            Set<String> setSession = _hashLuteceUserName.get( strLuteceUserName );
+        Set<String> setSession = _hashLuteceUserName.get( strLuteceUserName );
 
+        if ( setSession != null )
+        {
             for ( String strSession : setSession )
             {
-                if ( _hashSession.containsKey( strSession ) )
+                Oauth2LuteceUserSession session = _hashSession.get( strSession );
+
+                if ( session != null )
                 {
-                    _hashSession.get( strSession ).setUpToDate( false );
+                    session.setUpToDate( false );
                 }
             }
         }
