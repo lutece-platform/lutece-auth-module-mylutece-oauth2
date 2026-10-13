@@ -33,26 +33,21 @@
  */
 package fr.paris.lutece.plugins.mylutece.modules.oauth2.service;
 
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import fr.paris.lutece.test.LuteceTestCase;
+import fr.paris.lutece.test.mocks.MockHttpServletRequest;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
+import jakarta.inject.Inject;
+import jakarta.servlet.http.HttpSession;
 
 import org.junit.jupiter.api.Test;
 
 /**
- * Registry of the sessions of the OAuth2 users, read and written by concurrent requests
+ * Notification of the updates of the OAuth2 users to their sessions
  */
-public class Oauth2LuteceUserSessionServiceTest
+public class Oauth2LuteceUserSessionServiceTest extends LuteceTestCase
 {
-    private static final String USER = "user";
-    private static final int THREADS = 8;
-    private static final int SESSIONS_PER_THREAD = 500;
+    @Inject
+    private Oauth2LuteceUserSessionService _service;
 
     /**
      * A notification marks every session of the user as out of date, once
@@ -60,70 +55,50 @@ public class Oauth2LuteceUserSessionServiceTest
     @Test
     public void testNotifyMarksTheSessionsOfTheUser( )
     {
-        Oauth2LuteceUserSessionService service = new Oauth2LuteceUserSessionService( );
-        service.addLuteceUserSession( USER, "s1" );
-        service.addLuteceUserSession( USER, "s2" );
-        service.addLuteceUserSession( "other", "s3" );
+        HttpSession session1 = newSession( );
+        HttpSession session2 = newSession( );
+        HttpSession sessionOther = newSession( );
+        _service.addLuteceUserSession( "user-notify", session1 );
+        _service.addLuteceUserSession( "user-notify", session2 );
+        _service.addLuteceUserSession( "other-notify", sessionOther );
 
-        service.notifyLuteceUserUpdating( USER );
+        _service.notifyLuteceUserUpdating( "user-notify" );
 
-        assertFalse( service.isLuteceUserUpToDate( "s1" ) );
-        assertTrue( service.isLuteceUserUpToDate( "s1" ) );
-        assertFalse( service.isLuteceUserUpToDate( "s2" ) );
-        assertTrue( service.isLuteceUserUpToDate( "s3" ) );
+        assertFalse( _service.isLuteceUserUpToDate( session1 ) );
+        assertTrue( _service.isLuteceUserUpToDate( session1 ) );
+        assertFalse( _service.isLuteceUserUpToDate( session2 ) );
+        assertTrue( _service.isLuteceUserUpToDate( sessionOther ) );
+
+        // Every notification counts, not only the first one
+        _service.notifyLuteceUserUpdating( "user-notify" );
+        assertFalse( _service.isLuteceUserUpToDate( session1 ) );
     }
 
     /**
-     * Sessions of one user added and removed concurrently: the sessions still registered are all notified (no session
-     * lost between the removal of the last session of the user and a new addition)
+     * A session opened after a notification already holds the updated user
      */
     @Test
-    public void testConcurrentAddAndRemove( ) throws Exception
+    public void testSessionOpenedAfterTheNotification( )
     {
-        Oauth2LuteceUserSessionService service = new Oauth2LuteceUserSessionService( );
-        ExecutorService executor = Executors.newFixedThreadPool( THREADS );
-        CountDownLatch start = new CountDownLatch( 1 );
-        List<Future<?>> futures = new ArrayList<>( );
+        _service.notifyLuteceUserUpdating( "user-later" );
+        HttpSession session = newSession( );
+        _service.addLuteceUserSession( "user-later", session );
 
-        try
-        {
-            for ( int t = 0; t < THREADS; t++ )
-            {
-                int nThread = t;
-                futures.add( executor.submit( ( ) -> {
-                    start.await( );
-                    for ( int i = 0; i < SESSIONS_PER_THREAD; i++ )
-                    {
-                        String strSession = nThread + "-" + i;
-                        service.addLuteceUserSession( USER, strSession );
-                        // Odd sessions are removed, even sessions stay
-                        if ( i % 2 == 1 )
-                        {
-                            service.removeLuteceUserSession( strSession );
-                        }
-                    }
-                    return null;
-                } ) );
-            }
-            start.countDown( );
-            for ( Future<?> future : futures )
-            {
-                future.get( );
-            }
-        }
-        finally
-        {
-            executor.shutdownNow( );
-        }
+        assertTrue( _service.isLuteceUserUpToDate( session ) );
+    }
 
-        service.notifyLuteceUserUpdating( USER );
+    /**
+     * No session, or a session without OAuth2 user, has nothing to reload
+     */
+    @Test
+    public void testSessionWithoutUser( )
+    {
+        assertTrue( _service.isLuteceUserUpToDate( null ) );
+        assertTrue( _service.isLuteceUserUpToDate( newSession( ) ) );
+    }
 
-        for ( int t = 0; t < THREADS; t++ )
-        {
-            for ( int i = 0; i < SESSIONS_PER_THREAD; i += 2 )
-            {
-                assertFalse( service.isLuteceUserUpToDate( t + "-" + i ), "session " + t + "-" + i + " not notified" );
-            }
-        }
+    private static HttpSession newSession( )
+    {
+        return new MockHttpServletRequest( ).getSession( true );
     }
 }

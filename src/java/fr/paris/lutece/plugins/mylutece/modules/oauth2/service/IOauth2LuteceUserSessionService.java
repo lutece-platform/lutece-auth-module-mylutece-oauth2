@@ -33,13 +33,13 @@
  */
 package fr.paris.lutece.plugins.mylutece.modules.oauth2.service;
 
+import jakarta.servlet.http.HttpSession;
+
 public interface IOauth2LuteceUserSessionService
 {
-    boolean isLuteceUserUpToDate( String strSession );
+    boolean isLuteceUserUpToDate( HttpSession session );
 
-    void addLuteceUserSession( String strLuteceUserName, String strSession );
-
-    void removeLuteceUserSession( String strSession );
+    void addLuteceUserSession( String strLuteceUserName, HttpSession session );
 
     void notifyLuteceUserUpdating( String strLuteceUserName );
 }

@@ -51,10 +51,5 @@
 		</filter>	
    </filters>
    -->
-   <listeners>
-		<listener>
-  	 			<listener-class>fr.paris.lutece.plugins.mylutece.modules.oauth2.listener.Oauth2LuteceUserSessionListener</listener-class>
-		</listener>
-  </listeners>
 
 </plug-in>

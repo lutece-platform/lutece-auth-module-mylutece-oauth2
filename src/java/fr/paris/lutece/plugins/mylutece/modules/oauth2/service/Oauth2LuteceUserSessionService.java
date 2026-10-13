@@ -33,21 +33,31 @@
  */
 package fr.paris.lutece.plugins.mylutece.modules.oauth2.service;
 
-import jakarta.enterprise.context.ApplicationScoped;
-import jakarta.inject.Named;
+import fr.paris.lutece.portal.service.cache.Lutece107Cache;
+import fr.paris.lutece.portal.service.cache.LuteceCache;
 
-import java.util.Map;
-import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.inject.Inject;
+import jakarta.inject.Named;
+import jakarta.servlet.http.HttpSession;
+
+import java.util.Objects;
+import java.util.UUID;
 
 @ApplicationScoped
 @Named( "mylutece-oauth2.oauth2LuteceUserSessionService" )
 public class Oauth2LuteceUserSessionService implements IOauth2LuteceUserSessionService
 {
-    // Read and written by concurrent requests. The registry is local to this instance: a notification received by another
-    // instance does not reach the sessions registered here
-    private final Map<String, Oauth2LuteceUserSession> _hashSession = new ConcurrentHashMap<>( );
-    private final Map<String, Set<String>> _hashLuteceUserName = new ConcurrentHashMap<>( );
+    private static final String CACHE_NAME = "mylutece-oauth2.userVersionCache";
+    private static final String ATTRIBUTE_USER_NAME = "mylutece-oauth2.userName";
+    private static final String ATTRIBUTE_USER_VERSION = "mylutece-oauth2.userVersion";
+
+    // Version of each notified user, changed by every notification. The cache is shared by the instances of the site
+    // (Hazelcast in a cluster) and the HTTP session too: a notification received by any instance reaches the sessions of
+    // the user whatever the instance serving them. A disabled cache disables the notifications
+    @Inject
+    @LuteceCache( cacheName = CACHE_NAME, keyType = String.class, valueType = String.class, enable = true, preventGlobalReset = true )
+    private Lutece107Cache<String, String> _cacheUserVersion;
 
     /**
      * Default constructor for CDI
@@ -57,61 +67,40 @@ public class Oauth2LuteceUserSessionService implements IOauth2LuteceUserSessionS
         // Default constructor
     }
 
-    public boolean isLuteceUserUpToDate( String strSession )
+    @Override
+    public boolean isLuteceUserUpToDate( HttpSession session )
     {
-        Oauth2LuteceUserSession session = _hashSession.get( strSession );
+        String strLuteceUserName = ( session != null ) ? (String) session.getAttribute( ATTRIBUTE_USER_NAME ) : null;
 
-        if ( session != null && !session.isUpToDate( ) )
+        if ( strLuteceUserName == null )
         {
-            session.setUpToDate( true );
-
-            return false;
+            return true;
         }
 
-        return true;
-    }
+        String strVersion = _cacheUserVersion.get( strLuteceUserName );
 
-    public void addLuteceUserSession( String strLuteceUserName, String strSession )
-    {
-        // Added inside compute: a concurrent removal of the last session of this user cannot drop the set in between
-        _hashLuteceUserName.compute( strLuteceUserName, ( k, setSession ) -> {
-            Set<String> set = ( setSession != null ) ? setSession : ConcurrentHashMap.newKeySet( );
-            set.add( strSession );
-
-            return set;
-        } );
-        _hashSession.put( strSession, new Oauth2LuteceUserSession( strSession, strLuteceUserName, true ) );
-    }
-
-    public void removeLuteceUserSession( String strSession )
-    {
-        Oauth2LuteceUserSession session = _hashSession.remove( strSession );
-
-        if ( session != null )
+        if ( Objects.equals( strVersion, session.getAttribute( ATTRIBUTE_USER_VERSION ) ) )
         {
-            _hashLuteceUserName.computeIfPresent( session.getLuteceUserName( ), ( k, setSession ) -> {
-                setSession.remove( strSession );
-
-                return setSession.isEmpty( ) ? null : setSession;
-            } );
+            return true;
         }
+
+        // A null version (entry evicted) removes the attribute
+        session.setAttribute( ATTRIBUTE_USER_VERSION, strVersion );
+
+        return false;
     }
 
+    @Override
+    public void addLuteceUserSession( String strLuteceUserName, HttpSession session )
+    {
+        session.setAttribute( ATTRIBUTE_USER_NAME, strLuteceUserName );
+        session.setAttribute( ATTRIBUTE_USER_VERSION, _cacheUserVersion.get( strLuteceUserName ) );
+    }
+
+    @Override
     public void notifyLuteceUserUpdating( String strLuteceUserName )
     {
-        Set<String> setSession = _hashLuteceUserName.get( strLuteceUserName );
-
-        if ( setSession != null )
-        {
-            for ( String strSession : setSession )
-            {
-                Oauth2LuteceUserSession session = _hashSession.get( strSession );
-
-                if ( session != null )
-                {
-                    session.setUpToDate( false );
-                }
-            }
-        }
+        // A new random value rather than a counter: no read-modify-write between the instances
+        _cacheUserVersion.put( strLuteceUserName, UUID.randomUUID( ).toString( ) );
     }
 }

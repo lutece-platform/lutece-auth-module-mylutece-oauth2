@@ -199,7 +199,7 @@ public class MyluteceOauth2Filter implements Filter, Serializable
                         SecurityService.getInstance( ).logoutUser( request );
                     }
                 }
-            if ( !_oauth2LuteceUserSessionService.isLuteceUserUpToDate( request.getSession( true ).getId( ) ) )
+            if ( !_oauth2LuteceUserSessionService.isLuteceUserUpToDate( request.getSession( false ) ) )
             {
 
 

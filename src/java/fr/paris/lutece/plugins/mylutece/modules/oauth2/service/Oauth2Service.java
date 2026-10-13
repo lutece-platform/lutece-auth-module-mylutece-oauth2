@@ -290,7 +290,7 @@ public class Oauth2Service
             MyLuteceUserService.provideUserExternalInfos( user );
 
             // add Oauth2LuteceUserSessionService session
-            _luteceUserSessionService.addLuteceUserSession( user.getName( ), request.getSession( true ).getId( ) );
+            _luteceUserSessionService.addLuteceUserSession( user.getName( ), request.getSession( true ) );
 
         }
 

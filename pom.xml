@@ -49,6 +49,12 @@
             <scope>test</scope>
         </dependency>
         
+        <!-- Ehcache reads its XML configuration with JAXB: without an implementation, no cache starts in the tests -->
+        <dependency>
+            <groupId>org.glassfish.jaxb</groupId>
+            <artifactId>jaxb-runtime</artifactId>
+            <scope>test</scope>
+        </dependency>
         <!-- Spring Extension Plugin for compatibility -->
         </dependencies>
 
