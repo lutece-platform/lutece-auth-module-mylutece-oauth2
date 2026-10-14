@@ -33,11 +33,17 @@
  */
 package fr.paris.lutece.plugins.mylutece.modules.oauth2.service;
 
+import fr.paris.lutece.portal.service.cache.Lutece107CacheManager;
 import fr.paris.lutece.test.LuteceTestCase;
 import fr.paris.lutece.test.mocks.MockHttpServletRequest;
 
 import jakarta.inject.Inject;
 import jakarta.servlet.http.HttpSession;
+
+import org.ehcache.config.CacheRuntimeConfiguration;
+import org.ehcache.config.ResourceType;
+import org.ehcache.expiry.ExpiryPolicy;
+import org.ehcache.jsr107.Eh107Configuration;
 
 import org.junit.jupiter.api.Test;
 
@@ -48,6 +54,8 @@ public class Oauth2LuteceUserSessionServiceTest extends LuteceTestCase
 {
     @Inject
     private Oauth2LuteceUserSessionService _service;
+    @Inject
+    private Lutece107CacheManager _cacheManager;
 
     /**
      * A notification marks every session of the user as out of date, once
@@ -95,6 +103,26 @@ public class Oauth2LuteceUserSessionServiceTest extends LuteceTestCase
     {
         assertTrue( _service.isLuteceUserUpToDate( null ) );
         assertTrue( _service.isLuteceUserUpToDate( newSession( ) ) );
+    }
+
+    /**
+     * The versions never expire: a user who comes back after the default expiry of the caches (1000 s) still gets the
+     * notification, and the cache keeps more entries than the default 1000
+     */
+    @Test
+    @SuppressWarnings( "unchecked" )
+    public void testVersionsNeverExpire( )
+    {
+        _service.notifyLuteceUserUpdating( "user-expiry" );
+
+        // Ehcache, the provider of the tests and of a site without Hazelcast (Lutece only passes the expiry to Ehcache)
+        Eh107Configuration<String, String> ehcacheConfiguration = _cacheManager
+                .getCache( Oauth2LuteceUserSessionService.CACHE_NAME, String.class, String.class )
+                .getConfiguration( Eh107Configuration.class );
+        CacheRuntimeConfiguration<String, String> configuration = ehcacheConfiguration.unwrap( CacheRuntimeConfiguration.class );
+
+        assertSame( ExpiryPolicy.NO_EXPIRY, configuration.getExpiryPolicy( ) );
+        assertEquals( 100000, configuration.getResourcePools( ).getPoolForResource( ResourceType.Core.HEAP ).getSize( ) );
     }
 
     private static HttpSession newSession( )

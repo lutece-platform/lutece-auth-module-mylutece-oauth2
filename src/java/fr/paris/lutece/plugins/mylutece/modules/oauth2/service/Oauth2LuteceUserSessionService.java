@@ -48,7 +48,10 @@ import java.util.UUID;
 @Named( "mylutece-oauth2.oauth2LuteceUserSessionService" )
 public class Oauth2LuteceUserSessionService implements IOauth2LuteceUserSessionService
 {
-    private static final String CACHE_NAME = "mylutece-oauth2.userVersionCache";
+    // No dot in the name: the core reads the configuration of a cache from core.cache.status.<name>.<property>, cut at the
+    // first dot. Declared eternal in mylutece-oauth2.properties: an expired entry would lose the notification of a user
+    // who comes back after the expiry (1000 s by default)
+    static final String CACHE_NAME = "mylutece-oauth2UserVersionCache";
     private static final String ATTRIBUTE_USER_NAME = "mylutece-oauth2.userName";
     private static final String ATTRIBUTE_USER_VERSION = "mylutece-oauth2.userVersion";
 
