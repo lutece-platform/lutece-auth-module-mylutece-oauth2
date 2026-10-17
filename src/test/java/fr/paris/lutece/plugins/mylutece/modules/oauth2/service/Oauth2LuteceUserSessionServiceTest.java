@@ -33,7 +33,11 @@
  */
 package fr.paris.lutece.plugins.mylutece.modules.oauth2.service;
 
+import fr.paris.lutece.portal.service.cache.CacheConfigUtil;
+import fr.paris.lutece.portal.service.cache.CacheService;
+import fr.paris.lutece.portal.service.cache.CacheableService;
 import fr.paris.lutece.portal.service.cache.Lutece107CacheManager;
+import fr.paris.lutece.portal.service.datastore.DatastoreService;
 import fr.paris.lutece.test.LuteceTestCase;
 import fr.paris.lutece.test.mocks.MockHttpServletRequest;
 
@@ -123,6 +127,28 @@ public class Oauth2LuteceUserSessionServiceTest extends LuteceTestCase
 
         assertSame( ExpiryPolicy.NO_EXPIRY, configuration.getExpiryPolicy( ) );
         assertEquals( 100000, configuration.getResourcePools( ).getPoolForResource( ResourceType.Core.HEAP ).getSize( ) );
+    }
+
+    /**
+     * The cache is required: neither a disabled status left in the database nor the back office disable it, so the
+     * notifications keep reaching the sessions
+     */
+    @Test
+    public void testCacheCannotBeDisabled( )
+    {
+        _service.notifyLuteceUserUpdating( "user-required" );
+        CacheableService<?, ?> cache = CacheService.getCacheableServicesList( ).stream( )
+                .filter( cs -> Oauth2LuteceUserSessionService.CACHE_NAME.equals( cs.getName( ) ) ).findFirst( ).orElseThrow( );
+
+        assertTrue( cache.isRequired( ) );
+        cache.enableCache( false );
+        DatastoreService.setInstanceDataValue( CacheConfigUtil.getDSKey( Oauth2LuteceUserSessionService.CACHE_NAME, ".enabled" ), "0" );
+        assertTrue( cache.isCacheEnable( ) );
+
+        HttpSession session = newSession( );
+        _service.addLuteceUserSession( "user-required", session );
+        _service.notifyLuteceUserUpdating( "user-required" );
+        assertFalse( _service.isLuteceUserUpToDate( session ) );
     }
 
     private static HttpSession newSession( )

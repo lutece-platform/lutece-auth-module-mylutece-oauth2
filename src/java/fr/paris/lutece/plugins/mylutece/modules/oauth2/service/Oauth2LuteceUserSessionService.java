@@ -57,9 +57,10 @@ public class Oauth2LuteceUserSessionService implements IOauth2LuteceUserSessionS
 
     // Version of each notified user, changed by every notification. The cache is shared by the instances of the site
     // (Hazelcast in a cluster) and the HTTP session too: a notification received by any instance reaches the sessions of
-    // the user whatever the instance serving them. A disabled cache disables the notifications
+    // the user whatever the instance serving them. A disabled cache would lose the notifications: the cache is required
+    // (never disabled, whatever the status saved in the database). A reset only makes every session reload its user once
     @Inject
-    @LuteceCache( cacheName = CACHE_NAME, keyType = String.class, valueType = String.class, enable = true, preventGlobalReset = true )
+    @LuteceCache( cacheName = CACHE_NAME, keyType = String.class, valueType = String.class, enable = true, preventGlobalReset = true, required = true )
     private Lutece107Cache<String, String> _cacheUserVersion;
 
     /**
