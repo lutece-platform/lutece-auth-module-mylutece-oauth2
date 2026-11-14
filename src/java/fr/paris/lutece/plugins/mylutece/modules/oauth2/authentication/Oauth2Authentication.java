@@ -55,6 +55,7 @@ import fr.paris.lutece.portal.service.security.LoginRedirectException;
 import fr.paris.lutece.portal.service.security.LuteceUser;
 import fr.paris.lutece.portal.service.security.SecurityService;
 import fr.paris.lutece.portal.service.util.AppLogService;
+import fr.paris.lutece.portal.service.util.AppPathService;
 import fr.paris.lutece.portal.service.util.AppPropertiesService;
 
 /**
@@ -69,6 +70,8 @@ public class Oauth2Authentication extends PortalAuthentication implements Serial
     private static final String PROPERTY_AUTH_SERVICE_NAME = "mylutece-oauth2.service.name";
     private static final String CONSTANT_PATH_ICON = "images/local/skin/plugins/mylutece/modules/openid/mylutece-openid.png";
     private static final String PLUGIN_NAME = "mylutece-oauth2";
+    private static final String URL_CALLBACK = "servlet/plugins/oauth2/callback";
+    private static final String PARAMETER_DATA_CLIENT = "data_client";
     private static final long serialVersionUID = 1L;
     
     @Inject
@@ -123,7 +126,15 @@ public class Oauth2Authentication extends PortalAuthentication implements Serial
     @Override
     public LuteceUser processLogin( String strUserName, String strUserPassword, HttpServletRequest request ) throws LoginException, LoginRedirectException
     {
-        return getHttpAuthenticatedUser( request );
+        LuteceUser user = getHttpAuthenticatedUser( request );
+
+        if ( user == null )
+        {
+            // Not signed in yet: the callback of the OAuth2 plugin starts the sign-in at the provider
+            throw new LoginRedirectException( AppPathService.getBaseUrl( request ) + getDoLoginUrl( ) );
+        }
+
+        return user;
     }
 
     /**
@@ -176,6 +187,28 @@ public class Oauth2Authentication extends PortalAuthentication implements Serial
     public String getPluginName( )
     {
         return PLUGIN_NAME;
+    }
+
+    /**
+     *
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean isDelegatedAuthentication( )
+    {
+        return true;
+    }
+
+    /**
+     * Returns the callback of the OAuth2 plugin with the data client of the module, which starts the sign-in at the
+     * provider
+     *
+     * @return The URL
+     */
+    @Override
+    public String getDoLoginUrl( )
+    {
+        return URL_CALLBACK + "?" + PARAMETER_DATA_CLIENT + "=" + _authDataClient.getName( );
     }
 
     /**
