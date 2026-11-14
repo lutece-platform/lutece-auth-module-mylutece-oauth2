@@ -106,8 +106,8 @@ public class Oauth2LoginFormRenderTest extends LuteceTestCase
     }
 
     /**
-     * An anonymous user gets a level 2 heading and a sign-in control named by its text alternative; the error is written
-     * as text.
+     * An anonymous user gets a level 2 heading and a sign-in link, not a form (the callback redirects to the provider, on
+     * another origin), named by the text alternative of its image; the error is written as text.
      *
      * @throws Exception
      *             if the rendering fails
@@ -119,7 +119,9 @@ public class Oauth2LoginFormRenderTest extends LuteceTestCase
 
         assertTrue( strHtml.contains( "<h1>Authentication via Oauth2</h1>" ), strHtml );
         assertTrue( strHtml.contains( "<h2>Connect via Oauth2</h2>" ), strHtml );
-        assertTrue( strHtml.contains( "alt=\"Sign in via Oauth2\"" ), strHtml );
+        assertTrue( strHtml.contains( "<a href=\"servlet/plugins/oauth2/callback?data_client=authData\" id=\"login\">" ), strHtml );
+        assertTrue( strHtml.contains( "oauth2.png\" alt=\"Sign in via Oauth2\"" ), strHtml );
+        assertFalse( strHtml.contains( "<form" ), strHtml );
         assertTrue( strHtml.contains( "<p>a&amp;b &lt;i&gt;c&lt;/i&gt;</p>" ), strHtml );
         assertFalse( strHtml.contains( "<h3>" ), strHtml );
     }
