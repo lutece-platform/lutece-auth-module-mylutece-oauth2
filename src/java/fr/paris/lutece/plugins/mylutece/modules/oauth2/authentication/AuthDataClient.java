@@ -72,6 +72,7 @@ public class AuthDataClient extends AbstractDataClient implements Serializable
     public static final String SESSION_ERROR_LOGIN = "session_error_login";
     public static final String PARAM_ERROR_LOGIN = "error_login";
     public static final String PARAM_NEXT_URL = "next_url";
+    public static final String ERROR_TYPE_USERINFO = "ERROR_RETRIEVING_USER_INFO";
     private static ObjectMapper _mapper;
     private Oauth2Service _Oauth2Service;
 
@@ -100,8 +101,19 @@ public AuthDataClient( )
     {
         try
         {
-            Map<String, Object> mapUserInfo = parse( getData( token ) );
+            String strUserInfo = getData( token );
+
+            if ( strUserInfo == null )
+            {
+                // getData has already logged the HTTP error of the userinfo endpoint
+                handleError( request, response, ERROR_TYPE_USERINFO );
+                return;
+            }
+
+            Map<String, Object> mapUserInfo = parse( strUserInfo );
+
             _Oauth2Service.processAuthentication( request, mapUserInfo, token );
+
             _Oauth2Service.redirect( request, response );
 
         }
