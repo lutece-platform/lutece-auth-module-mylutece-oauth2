@@ -39,6 +39,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Map.Entry;
 import java.util.Optional;
 
@@ -224,7 +225,8 @@ public class Oauth2Service
 
             if ( mapUserInfo.containsKey( ATTRIBUTE_USER_KEY_NAME [i] ) )
             {
-                user = new Oauth2User( (String) mapUserInfo.get( ATTRIBUTE_USER_KEY_NAME [i] ), token, _authService );
+                // the identifier may be sent as a number
+                user = new Oauth2User( Objects.toString( mapUserInfo.get( ATTRIBUTE_USER_KEY_NAME [i] ), null ), token, _authService );
             }
         }
 
@@ -239,6 +241,11 @@ public class Oauth2Service
                     {
 
                         Object val = entry.getValue( );
+                        if ( val == null )
+                        {
+                            // a claim sent as null leaves the attribute empty
+                            continue;
+                        }
                         if ( val instanceof java.util.List )
                         {
 
@@ -247,6 +254,10 @@ public class Oauth2Service
                             java.util.List<Object> listValues = (java.util.List<Object>) val;
                             for ( Object tabVal : listValues )
                             {
+                                if ( tabVal == null )
+                                {
+                                    continue;
+                                }
                                 strBufVal.append( tabVal.toString( ) );
                                 strBufVal.append( SEPARATOR );
                             }

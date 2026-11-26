@@ -129,5 +129,27 @@ public class AuthDataClientUserInfoTest extends LuteceTestCase
         assertDoesNotThrow( ( ) -> client.handleToken( newToken( ), new MockHttpServletRequest( ), new RedirectResponse( ) ) );
     }
 
+    /**
+     * AX-04: a numeric uid must not fail with a ClassCastException
+     */
+    @Test
+    public void testNumericUidDoesNotThrow( )
+    {
+        StubDataClient client = new StubDataClient( _oauth2Service, "{\"uid\":12345}" );
+
+        assertDoesNotThrow( ( ) -> client.handleToken( newToken( ), new MockHttpServletRequest( ), new RedirectResponse( ) ) );
+    }
+
+    /**
+     * AX-04: a mapped claim (prenom, mapped to user.name.given) sent as null must not fail with a NullPointerException
+     */
+    @Test
+    public void testNullMappedClaimDoesNotThrow( )
+    {
+        StubDataClient client = new StubDataClient( _oauth2Service, "{\"uid\":\"e2e-null\",\"prenom\":null}" );
+
+        assertDoesNotThrow( ( ) -> client.handleToken( newToken( ), new MockHttpServletRequest( ), new RedirectResponse( ) ) );
+    }
+
 
 }
