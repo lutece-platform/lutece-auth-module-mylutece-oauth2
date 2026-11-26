@@ -305,6 +305,12 @@ public class Oauth2Service
 
         }
 
+        else
+        {
+            _logger.error( "OAuth2 sign-in refused: the userinfo has none of the user identifier attributes {} ({})",
+                    String.join( SEPARATOR, ATTRIBUTE_USER_KEY_NAME ), PROPERTY_USER_KEY_NAME );
+        }
+
         SecurityService.getInstance( ).registerUser( request, user );
 
         return user;

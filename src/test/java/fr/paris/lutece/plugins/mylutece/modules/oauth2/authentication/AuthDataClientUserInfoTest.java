@@ -151,5 +151,31 @@ public class AuthDataClientUserInfoTest extends LuteceTestCase
         assertDoesNotThrow( ( ) -> client.handleToken( newToken( ), new MockHttpServletRequest( ), new RedirectResponse( ) ) );
     }
 
+    /**
+     * AX-06: a userinfo without the uid claim must not end the sign-in silently: at least one WARN or ERROR line
+     */
+    @Test
+    public void testMissingUidIsLogged( )
+    {
+        LoggerContext context = (LoggerContext) LogManager.getContext( false );
+        LoggerConfig root = context.getConfiguration( ).getRootLogger( );
+        ListAppender appender = new ListAppender( );
+        appender.start( );
+        root.addAppender( appender, Level.WARN, null );
+        context.updateLoggers( );
 
+        try
+        {
+            new StubDataClient( _oauth2Service, "{\"sub\":\"e2e-sub\"}" ).handleToken( newToken( ), new MockHttpServletRequest( ), new RedirectResponse( ) );
+        }
+        finally
+        {
+            root.removeAppender( appender.getName( ) );
+            context.updateLoggers( );
+            appender.stop( );
+        }
+
+        assertTrue( appender._listEvents.stream( ).anyMatch( e -> e.getLevel( ).isMoreSpecificThan( Level.WARN ) ),
+                "no WARN or ERROR logged for a userinfo without uid" );
+    }
 }

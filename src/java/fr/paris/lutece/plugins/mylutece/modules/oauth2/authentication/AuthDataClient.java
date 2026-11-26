@@ -73,6 +73,7 @@ public class AuthDataClient extends AbstractDataClient implements Serializable
     public static final String PARAM_ERROR_LOGIN = "error_login";
     public static final String PARAM_NEXT_URL = "next_url";
     public static final String ERROR_TYPE_USERINFO = "ERROR_RETRIEVING_USER_INFO";
+    public static final String ERROR_TYPE_NO_USER_IDENTIFIER = "ERROR_NO_USER_IDENTIFIER";
     private static ObjectMapper _mapper;
     private Oauth2Service _Oauth2Service;
 
@@ -112,7 +113,12 @@ public AuthDataClient( )
 
             Map<String, Object> mapUserInfo = parse( strUserInfo );
 
-            _Oauth2Service.processAuthentication( request, mapUserInfo, token );
+            if ( _Oauth2Service.processAuthentication( request, mapUserInfo, token ) == null )
+            {
+                // no user identifier in the userinfo: the sign-in failed, it must not end as a success
+                handleError( request, response, ERROR_TYPE_NO_USER_IDENTIFIER );
+                return;
+            }
 
             _Oauth2Service.redirect( request, response );
 
