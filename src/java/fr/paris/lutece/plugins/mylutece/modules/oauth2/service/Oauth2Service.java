@@ -61,13 +61,14 @@ import fr.paris.lutece.plugins.mylutece.business.LuteceUserAttributeDescription;
 import fr.paris.lutece.plugins.mylutece.modules.oauth2.authentication.Oauth2Authentication;
 import fr.paris.lutece.plugins.mylutece.modules.oauth2.authentication.Oauth2User;
 import fr.paris.lutece.plugins.mylutece.service.MyLuteceUserService;
-import fr.paris.lutece.plugins.mylutece.web.MyLuteceApp;
 import fr.paris.lutece.plugins.oauth2.business.Token;
 import fr.paris.lutece.portal.service.security.LuteceUser;
 import fr.paris.lutece.portal.service.security.SecurityService;
 import fr.paris.lutece.portal.service.util.AppLogService;
 import fr.paris.lutece.portal.service.util.AppPropertiesService;
+import fr.paris.lutece.portal.service.util.AppPathService;
 import fr.paris.lutece.portal.web.PortalJspBean;
+import fr.paris.lutece.util.http.SecurityUtil;
 
 // TODO: Auto-generated Javadoc
 /**
@@ -370,9 +371,17 @@ public class Oauth2Service
         String strNextURL = PortalJspBean.getLoginNextUrl( request );
         _logger.info( "Next URL : {}", strNextURL );
 
-        if ( strNextURL == null )
+        if ( strNextURL != null && !SecurityUtil.isInternalRedirectUrlSafe( strNextURL, request ) )
         {
-            strNextURL = MyLuteceApp.getDefaultRedirectUrl( );
+            _logger.error( "OAuth2 sign-in: the next URL {} is not an internal URL, redirection to the portal", SecurityUtil.logForgingProtect( strNextURL ) );
+            strNextURL = null;
+        }
+
+        if ( StringUtils.isBlank( strNextURL ) )
+        {
+            // the callback is served under servlet/plugins/oauth2/: the default URL of MyLutece (../../Portal.jsp, relative
+            // to jsp/site/plugins/mylutece/) would resolve to servlet/Portal.jsp, so the portal is given as an absolute URL
+            strNextURL = AppPathService.getBaseUrl( request ) + AppPathService.getPortalUrl( );
         }
 
         strNextURL = response.encodeRedirectURL( strNextURL );
